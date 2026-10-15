@@ -30,3 +30,7 @@ jobs:
 
       - name: Compilar
         run: dotnet build NokyLabs.sln -c Release
+
+      # Inclui a garantia de que atualizar um app não apaga os dados do usuário.
+      - name: Testes automáticos
+        run: dotnet test tests/NokyLabs.Tests -c Release

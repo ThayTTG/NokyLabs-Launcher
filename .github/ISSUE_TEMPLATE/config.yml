@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Site da NokyLabs
+    url: https://thayttg.github.io/nokylabs/#launcher
+    about: Como usar, como instalar e dúvidas frequentes.
+  - name: Falar com a NokyLabs por e-mail
+    url: https://thayttg.github.io/nokylabs/#contato
+    about: Para quem prefere não usar o GitHub.

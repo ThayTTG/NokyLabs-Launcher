@@ -113,6 +113,11 @@ public partial class AppCardViewModel : ObservableObject
     public bool IsInstalled => Status is AppStatus.Installed or AppStatus.UpdateAvailable;
     public bool HasUpdate => Status == AppStatus.UpdateAvailable;
 
+    /// <summary>Novidades da versão mais recente, prontas para a tela.</summary>
+    public string NotesText => NotesHelper.Format(App.Notes);
+    public string NotesTitle => $"Novidades da v{LatestVersion}";
+    public bool HasNotes => !string.IsNullOrWhiteSpace(App.Notes) && !IsComingSoon && !IsWeb;
+
     /// <summary>O link deste sistema ainda é um placeholder.</summary>
     public bool IsDownloadPending => Download is null || Download.IsPlaceholder;
 
@@ -194,7 +199,8 @@ public partial class AppCardViewModel : ObservableObject
                      nameof(IsRunningAction),
                      nameof(IsInstalled), nameof(HasUpdate), nameof(StatusText), nameof(StatusBrush),
                      nameof(StatusSoftBrush), nameof(VersionText), nameof(ActionText),
-                     nameof(IsOpenAction), nameof(IsUpdateAction), nameof(IsInstallAction)
+                     nameof(IsOpenAction), nameof(IsUpdateAction), nameof(IsInstallAction),
+                     nameof(HasNotes), nameof(NotesTitle)
                  })
         {
             OnPropertyChanged(name);

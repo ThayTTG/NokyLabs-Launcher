@@ -16,6 +16,13 @@ public sealed class InstallManifest
 
     /// <summary>Atalhos criados para este app (removidos junto ao desinstalar).</summary>
     public List<string> Shortcuts { get; set; } = new();
+
+    /// <summary>
+    /// Arquivos que vieram no pacote desta versão (caminhos relativos, com "/").
+    /// Numa atualização, tudo o que estiver na pasta e NÃO estiver nesta lista é do usuário
+    /// (configurações, dados, logs) e é levado para a versão nova.
+    /// </summary>
+    public List<string> PackageFiles { get; set; } = new();
 }
 
 /// <summary>

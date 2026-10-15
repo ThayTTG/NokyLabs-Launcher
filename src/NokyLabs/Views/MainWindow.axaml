@@ -206,8 +206,22 @@
 
                       <!-- Versão / progresso -->
                       <Panel Height="16">
-                        <TextBlock Text="{Binding VersionText}" Classes="muted" VerticalAlignment="Center"
-                                   IsVisible="{Binding !IsBusy}" />
+                        <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding !IsBusy}">
+                          <TextBlock Text="{Binding VersionText}" Classes="muted" VerticalAlignment="Center"
+                                     TextTrimming="CharacterEllipsis" />
+                          <Button Grid.Column="1" Classes="link" Content="Novidades" Margin="8,0,0,0"
+                                  VerticalAlignment="Center" IsVisible="{Binding HasNotes}"
+                                  ToolTip.Tip="O que mudou na versão mais recente">
+                            <Button.Flyout>
+                              <Flyout Placement="BottomEdgeAlignedRight">
+                                <StackPanel Spacing="8" MaxWidth="320">
+                                  <TextBlock Text="{Binding NotesTitle}" FontSize="13" FontWeight="SemiBold" />
+                                  <TextBlock Text="{Binding NotesText}" Classes="secondary" TextWrapping="Wrap" />
+                                </StackPanel>
+                              </Flyout>
+                            </Button.Flyout>
+                          </Button>
+                        </Grid>
                         <ProgressBar Classes="slim" VerticalAlignment="Center"
                                      Minimum="0" Maximum="100" Value="{Binding Progress}"
                                      IsIndeterminate="{Binding IsProgressIndeterminate}"
@@ -343,6 +357,9 @@
                       <StackPanel Grid.Column="1" Margin="16,0" Spacing="4" VerticalAlignment="Center">
                         <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold" />
                         <TextBlock Text="{Binding VersionText}" Classes="muted" IsVisible="{Binding !IsBusy}" />
+                        <TextBlock Text="{Binding NotesText}" Classes="secondary" TextWrapping="Wrap"
+                                   Margin="0,4,0,0" MaxWidth="620" HorizontalAlignment="Left"
+                                   IsVisible="{Binding HasNotes}" />
                         <ProgressBar Classes="slim" Minimum="0" Maximum="100" Value="{Binding Progress}"
                                      IsIndeterminate="{Binding IsProgressIndeterminate}"
                                      IsVisible="{Binding IsBusy}" Width="320" HorizontalAlignment="Left" />

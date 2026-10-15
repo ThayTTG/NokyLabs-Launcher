@@ -23,7 +23,7 @@ dotnet run --project src/NokyLabs
 
 ## Como lançar uma versão
 
-1. Aumente o `<Version>` em `src/NokyLabs/NokyLabs.csproj`.
+1. Anote o que mudou no `CHANGELOG.md` (seção `## [Não lançado]`) e aumente o `<Version>` em `src/NokyLabs/NokyLabs.csproj`.
 2. Envie para o branch `release` (`git push origin main:release`).
 3. O GitHub Actions compila Windows e Linux e publica o Release sozinho, já levando
    a cópia mais recente do catálogo do site embutida (para funcionar offline).

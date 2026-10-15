@@ -1,0 +1,16 @@
+name: Sugerir uma ideia
+description: Uma melhoria ou recurso novo para o NokyLabs Launcher
+title: "[Ideia] "
+body:
+  - type: textarea
+    id: ideia
+    attributes:
+      label: Qual é a ideia?
+      placeholder: O que você gostaria que o NokyLabs Launcher fizesse?
+    validations:
+      required: true
+  - type: textarea
+    id: porque
+    attributes:
+      label: Para que ela ajudaria?
+      placeholder: Conte a situação em que você sentiu falta disso.

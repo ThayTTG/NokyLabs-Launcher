@@ -126,6 +126,7 @@ public static class InstallService
 
             // Numa atualização, mantém a lista de atalhos que já existiam (eles continuam válidos)
             var previous = ReadManifest(AppPaths.AppFolder(sourceFolder, app.Id));
+            var packageFiles = ListRelativeFiles(staging);
 
             var manifest = new InstallManifest
             {
@@ -134,7 +135,8 @@ public static class InstallService
                 Version = app.Version,
                 Executable = executable,
                 InstalledAt = DateTime.Now,
-                Shortcuts = previous?.Shortcuts ?? new List<string>()
+                Shortcuts = previous?.Shortcuts ?? new List<string>(),
+                PackageFiles = packageFiles
             };
             await File.WriteAllTextAsync(
                 Path.Combine(staging, InstallManifest.FileName),
@@ -161,6 +163,10 @@ public static class InstallService
 
             try
             {
+                // Configurações e dados que o app guardava na própria pasta vão junto para a versão nova.
+                if (Directory.Exists(backup))
+                    CarryOverUserFiles(backup, staging, previous);
+
                 Directory.Move(staging, target);
             }
             catch
@@ -347,6 +353,71 @@ public static class InstallService
         }
 
         progress.Report(85);
+    }
+
+    // ---------------------------------------------------------------- arquivos do usuário
+
+    private static readonly StringComparer PathComparer =
+        OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+
+    private static string Normalize(string relative) => relative.Replace('\\', '/');
+
+    /// <summary>Todos os arquivos de uma pasta, em caminhos relativos com "/" (menos o manifesto).</summary>
+    internal static List<string> ListRelativeFiles(string folder) =>
+        Directory.EnumerateFiles(folder, "*", SearchOption.AllDirectories)
+            .Select(f => Normalize(Path.GetRelativePath(folder, f)))
+            .Where(r => !PathComparer.Equals(r, InstallManifest.FileName))
+            .OrderBy(r => r, PathComparer)
+            .ToList();
+
+    /// <summary>Arquivos de programa nunca são levados de uma versão para a outra.</summary>
+    private static bool IsProgramFile(string relative)
+    {
+        var name = Path.GetFileName(relative);
+        return name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)
+            || name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)
+            || name.EndsWith(".pdb", StringComparison.OrdinalIgnoreCase)
+            || name.EndsWith(".so", StringComparison.OrdinalIgnoreCase)
+            || name.EndsWith(".dylib", StringComparison.OrdinalIgnoreCase)
+            || name.EndsWith(".appimage", StringComparison.OrdinalIgnoreCase)
+            || name.EndsWith(".deps.json", StringComparison.OrdinalIgnoreCase)
+            || name.EndsWith(".runtimeconfig.json", StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
+    /// Copia da pasta antiga para a nova tudo o que for do usuário: arquivos que não vieram
+    /// no pacote anterior (configurações, dados, logs). Exemplos reais: o config_alunos.json do
+    /// Avaliador Acadêmico e o filtro-conteudo.json do YT-DLP GUI, que ficam ao lado do .exe.
+    /// </summary>
+    /// <returns>Quantos arquivos foram levados.</returns>
+    internal static int CarryOverUserFiles(string oldFolder, string newFolder, InstallManifest? previous)
+    {
+        // Instalações feitas antes da v0.7 não têm a lista do pacote: aí vale só a regra
+        // "arquivo de programa não passa; o resto passa se a versão nova não trouxer um igual".
+        var knownPackage = previous?.PackageFiles is { Count: > 0 };
+        var oldPackage = new HashSet<string>(previous?.PackageFiles ?? new List<string>(), PathComparer);
+        var copied = 0;
+
+        foreach (var relative in ListRelativeFiles(oldFolder))
+        {
+            if (oldPackage.Contains(relative)) continue;
+            if (previous is not null && PathComparer.Equals(relative, Normalize(previous.Executable))) continue;
+            if (IsProgramFile(relative)) continue;
+
+            var destination = Path.Combine(newFolder, relative.Replace('/', Path.DirectorySeparatorChar));
+
+            // Se a versão nova trouxe um arquivo com o mesmo nome: quando sabemos que o antigo era
+            // do usuário (não veio no pacote anterior), o do usuário vence; sem essa certeza, fica o novo.
+            if (File.Exists(destination) && !knownPackage) continue;
+
+            Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+            File.Copy(Path.Combine(oldFolder, relative.Replace('/', Path.DirectorySeparatorChar)), destination, overwrite: true);
+            copied++;
+        }
+
+        if (copied > 0)
+            System.Diagnostics.Trace.WriteLine($"[NokyLabs] {copied} arquivo(s) do usuário levados para a versão nova.");
+        return copied;
     }
 
     internal static async Task VerifySha256Async(string file, string expected, CancellationToken ct)

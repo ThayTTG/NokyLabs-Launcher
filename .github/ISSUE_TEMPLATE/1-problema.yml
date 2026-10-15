@@ -1,0 +1,49 @@
+name: Relatar um problema
+description: Algo não funcionou como deveria no NokyLabs Launcher
+title: "[Problema] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigada por avisar! 💜 Quanto mais detalhes, mais rápido dá para resolver.
+  - type: textarea
+    id: oque
+    attributes:
+      label: O que aconteceu?
+      placeholder: Conte o que deu errado, do seu jeito.
+    validations:
+      required: true
+  - type: textarea
+    id: passos
+    attributes:
+      label: Como fazer acontecer de novo
+      placeholder: |
+        1. Abri o app
+        2. Cliquei em…
+        3. Apareceu…
+  - type: textarea
+    id: esperado
+    attributes:
+      label: O que você esperava que acontecesse?
+  - type: input
+    id: versao
+    attributes:
+      label: Versão do NokyLabs Launcher
+      description: Aparece na tela Sobre do app ou no card dele no NokyLabs Launcher.
+      placeholder: "ex.: 1.1.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: sistema
+    attributes:
+      label: Sistema
+      options:
+        - Windows 11
+        - Windows 10
+        - Linux
+        - Outro
+  - type: textarea
+    id: anexos
+    attributes:
+      label: Prints ou logs (opcional)
+      description: Arraste imagens ou arquivos de log para cá.

@@ -26,7 +26,7 @@ public static class HttpHelper
     private static HttpClient CreateClient()
     {
         var client = new HttpClient { Timeout = TimeSpan.FromMinutes(15) };
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("NokyLabs-Launcher/0.6");
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("NokyLabs-Launcher/0.7");
         return client;
     }
 
@@ -73,6 +73,22 @@ public static class VersionHelper
     }
 
     private static string Clean(string v) => v.Trim().TrimStart('v', 'V');
+}
+
+/// <summary>Transforma as notas do CHANGELOG (Markdown simples) em texto para a tela.</summary>
+public static class NotesHelper
+{
+    public static string Format(string? notes)
+    {
+        if (string.IsNullOrWhiteSpace(notes)) return string.Empty;
+
+        var lines = notes.Replace("\r\n", "\n").Split('\n')
+            .Select(l => l.Trim())
+            .Where(l => l.Length > 0 && !l.StartsWith('#'))
+            .Select(l => l.StartsWith("- ") || l.StartsWith("* ") ? "•  " + l[2..].Trim() : l)
+            .Select(l => l.Replace("**", "").Replace("`", ""));
+        return string.Join("\n", lines);
+    }
 }
 
 /// <summary>Erro "esperado", com uma mensagem amigável para mostrar na tela.</summary>

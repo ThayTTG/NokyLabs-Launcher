@@ -122,6 +122,10 @@ jobs:
     needs: [versao, windows, linux]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v5
+      - name: Notas da versão (CHANGELOG.md)
+        id: notas
+        run: python3 .github/scripts/notas_da_versao.py ler "${{ needs.versao.outputs.tag }}" CHANGELOG.md
       - uses: actions/download-artifact@v7
         with:
           merge-multiple: true
@@ -140,6 +144,11 @@ jobs:
           body: |
             ## NokyLabs Launcher ${{ needs.versao.outputs.tag }}
 
+            ### O que há de novo
+            <!-- novidades -->
+            ${{ steps.notas.outputs.texto }}
+            <!-- /novidades -->
+
             Instale, abra e mantenha todos os apps da NokyLabs atualizados, num só lugar.
 
             **Windows:** baixe o `NokyLabs-win-x64.zip`, extraia e abra o `NokyLabs.exe`. O assistente cuida do resto.
@@ -148,3 +157,19 @@ jobs:
             **Linux:** baixe o `NokyLabs-linux-x64.zip`, extraia e rode `./NokyLabs`.
 
             Não precisa instalar o .NET. Mais detalhes: https://thayttg.github.io/nokylabs/#launcher
+
+      # Se as notas vieram da seção "Não lançado", ela vira a seção desta versão no CHANGELOG do main.
+      - name: Registrar a versão no CHANGELOG
+        if: steps.notas.outputs.promover == 'sim'
+        shell: bash
+        env:
+          PRINCIPAL: ${{ github.event.repository.default_branch }}
+        run: |
+          git fetch --depth 1 origin "$PRINCIPAL"
+          git checkout -f -B registrar-changelog "origin/$PRINCIPAL"
+          python3 .github/scripts/notas_da_versao.py promover "${{ needs.versao.outputs.tag }}" CHANGELOG.md
+          if git diff --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "CHANGELOG: versão ${{ needs.versao.outputs.tag }}"
+          git push origin "HEAD:$PRINCIPAL" || echo "::warning::Não consegui registrar a versão no CHANGELOG; ajuste à mão."

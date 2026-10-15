@@ -41,6 +41,9 @@ public sealed class CatalogApp
     /// <summary>Versão mais recente publicada (ex.: "1.3.0").</summary>
     public string Version { get; set; } = "0.0.0";
 
+    /// <summary>Novidades da versão mais recente (vêm do CHANGELOG do app, pelo robô do catálogo).</summary>
+    public string Notes { get; set; } = string.Empty;
+
     /// <summary>Cor de destaque do card, em hexadecimal (ex.: "#818CF8").</summary>
     public string Accent { get; set; } = "#A99FC7";
 
@@ -81,6 +84,9 @@ public sealed class CatalogDownload
 
     /// <summary>Opcional: hash SHA-256 do arquivo baixado, para conferir se chegou inteiro.</summary>
     public string? Sha256 { get; set; }
+
+    /// <summary>Opcional: tamanho do arquivo em bytes (preenchido pelo robô do catálogo).</summary>
+    public long? Size { get; set; }
 
     /// <summary>
     /// False enquanto o arquivo ainda não foi publicado nos Releases.

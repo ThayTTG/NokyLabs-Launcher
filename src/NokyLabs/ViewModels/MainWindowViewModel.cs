@@ -499,7 +499,7 @@ public partial class MainWindowViewModel : ObservableObject
         ? "Reinicie agora, ou ela entra sozinha na próxima vez que o launcher abrir."
         : string.IsNullOrWhiteSpace(_launcherInfo?.Notes)
             ? $"Você está na v{SelfUpdateService.CurrentVersion}."
-            : _launcherInfo!.Notes;
+            : NotesHelper.Format(_launcherInfo!.Notes);
 
     public string LauncherActionText =>
         IsLauncherUpdating ? "Baixando…"
