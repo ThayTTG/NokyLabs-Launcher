@@ -6,6 +6,8 @@ name: Build e Release
 #   • enviar qualquer commit para o branch "release"  → a tag vem do <Version> do .csproj
 #   • ou enviar uma tag no formato v1.2.3
 #
+# Se a versão já foi lançada, o workflow para logo no começo e pede para aumentar o <Version>.
+#
 # Arquivos publicados (nomes fixos, usados pelo site e pela autoatualização):
 #   NokyLabs-win-x64.zip    → NokyLabs.exe
 #   NokyLabs-linux-x64.zip  → NokyLabs
@@ -39,10 +41,41 @@ jobs:
             echo "tag=v$v" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Conferir se a versão é nova
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${{ steps.v.outputs.tag }}"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "::error title=Versão já lançada::A versão $tag já existe. Aumente o <Version> no NokyLabs.csproj (ex.: 0.6.0 → 0.6.1) e envie de novo para o branch release."
+            exit 1
+          fi
+          echo "A versão $tag é nova. Seguindo com o lançamento."
+
+      # O launcher leva uma cópia do catálogo para funcionar offline: pega a mais recente do site.
+      - name: Catálogo embutido atualizado
+        run: |
+          if curl -fsSL https://thayttg.github.io/nokylabs/catalogo.json -o novo.json \
+             && python3 -I .github/scripts/conferir_json.py novo.json; then
+            mv novo.json src/NokyLabs/Assets/catalogo.json
+            echo "Catálogo do site embutido."
+          else
+            echo "::warning::Não consegui baixar o catálogo do site; vai a cópia que está no repositório."
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: catalogo
+          path: src/NokyLabs/Assets/catalogo.json
+
   windows:
+    needs: versao
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: catalogo
+          path: src/NokyLabs/Assets
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
@@ -60,9 +93,14 @@ jobs:
           path: NokyLabs-win-x64.zip
 
   linux:
+    needs: versao
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: catalogo
+          path: src/NokyLabs/Assets
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"

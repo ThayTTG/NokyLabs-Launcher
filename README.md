@@ -25,8 +25,17 @@ dotnet run --project src/NokyLabs
 
 1. Aumente o `<Version>` em `src/NokyLabs/NokyLabs.csproj`.
 2. Envie para o branch `release` (`git push origin main:release`).
-3. O GitHub Actions compila Windows e Linux e publica o Release sozinho.
-4. No `catalogo.json` do site, atualize `launcher.version` e deixe `"published": true`.
+3. O GitHub Actions compila Windows e Linux e publica o Release sozinho, já levando
+   a cópia mais recente do catálogo do site embutida (para funcionar offline).
+4. Em até uma hora, o robô do catálogo (no repositório do site) atualiza a versão, o link
+   e o SHA-256 do launcher, e quem tem o NokyLabs instalado vê o aviso de versão nova.
+   Para não esperar: no repositório `nokylabs`, aba **Actions** › **Robô do catálogo** › **Run workflow**.
+
+Se a versão já tinha sido lançada, o workflow para logo no começo com o aviso
+"Versão já lançada": é só aumentar o `<Version>` e enviar de novo.
+
+A cada envio para o `main`, o workflow **Verificar compilação** compila o projeto sem lançar nada,
+então um erro de código aparece ali antes de chegar a um lançamento.
 
 ## Como gerar os executáveis
 

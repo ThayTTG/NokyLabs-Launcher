@@ -1,0 +1,32 @@
+name: Verificar compilação
+
+# Compila o projeto a cada envio para o main (e em pull requests), sem lançar nada.
+# Se aparecer um X vermelho aqui, tem erro no código: melhor descobrir agora
+# do que na hora de lançar uma versão.
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["**.md", "docs/**", "LICENSE"]
+  pull_request:
+    paths-ignore: ["**.md", "docs/**", "LICENSE"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compilar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Compilar
+        run: dotnet build NokyLabs.sln -c Release
