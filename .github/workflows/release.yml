@@ -31,7 +31,7 @@ jobs:
     outputs:
       tag: ${{ steps.v.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: v
         run: |
           if [ "${{ github.ref_type }}" = "tag" ]; then
@@ -62,7 +62,7 @@ jobs:
           else
             echo "::warning::Não consegui baixar o catálogo do site; vai a cópia que está no repositório."
           fi
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: catalogo
           path: src/NokyLabs/Assets/catalogo.json
@@ -71,12 +71,12 @@ jobs:
     needs: versao
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v7
         with:
           name: catalogo
           path: src/NokyLabs/Assets
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: "8.0.x"
       - name: Publicar (win-x64, arquivo único)
@@ -87,7 +87,7 @@ jobs:
       - name: Compactar
         shell: pwsh
         run: Compress-Archive -Path publish\NokyLabs.exe -DestinationPath NokyLabs-win-x64.zip
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: windows
           path: NokyLabs-win-x64.zip
@@ -96,12 +96,12 @@ jobs:
     needs: versao
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v7
         with:
           name: catalogo
           path: src/NokyLabs/Assets
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: "8.0.x"
       - name: Publicar (linux-x64, arquivo único)
@@ -113,7 +113,7 @@ jobs:
         run: |
           chmod +x publish/NokyLabs
           cd publish && zip -9 ../NokyLabs-linux-x64.zip NokyLabs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: linux
           path: NokyLabs-linux-x64.zip
@@ -122,12 +122,12 @@ jobs:
     needs: [versao, windows, linux]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           merge-multiple: true
       - name: Calcular SHA-256
         run: sha256sum NokyLabs-*.zip | tee SHA256SUMS.txt
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.versao.outputs.tag }}
           name: NokyLabs Launcher ${{ needs.versao.outputs.tag }}
