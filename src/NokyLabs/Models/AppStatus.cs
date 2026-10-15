@@ -18,5 +18,8 @@ public enum AppStatus
     ComingSoon,
 
     /// <summary>Roda no navegador: não precisa instalar.</summary>
-    Web
+    Web,
+
+    /// <summary>Uso restrito: em vez de baixar, a pessoa pede acesso.</summary>
+    Restricted
 }

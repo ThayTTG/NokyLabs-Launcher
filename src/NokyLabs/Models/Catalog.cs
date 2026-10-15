@@ -62,6 +62,19 @@ public sealed class CatalogApp
     public string? WebAction { get; set; }
 
     /// <summary>
+    /// Opcional: app de uso restrito. Link onde a pessoa pede acesso (formulário, e-mail…).
+    /// Quando preenchido, o launcher não baixa o app: o card mostra "Solicitar acesso".
+    /// Quem já recebeu o app e colocou a pasta dele na pasta de origem continua podendo abri-lo.
+    /// </summary>
+    public string? RequestAccess { get; set; }
+
+    /// <summary>Texto do botão de apps restritos (padrão: "Solicitar acesso").</summary>
+    public string? RequestAction { get; set; }
+
+    /// <summary>True se o app é de uso restrito (só com acesso liberado).</summary>
+    public bool IsRestricted => !string.IsNullOrWhiteSpace(RequestAccess);
+
+    /// <summary>
     /// Downloads por sistema. Chaves: "windows", "linux", "macos".
     /// Se o sistema não aparece (ou está null), o app é mostrado como indisponível nele.
     /// </summary>

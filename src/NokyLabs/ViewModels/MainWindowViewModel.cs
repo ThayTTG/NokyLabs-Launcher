@@ -585,7 +585,7 @@ public partial class MainWindowViewModel : ObservableObject
 
     public int InstalledCount => RealApps.Count(a => a.IsInstalled);
     public int UpdateCount => RealApps.Count(a => a.HasUpdate);
-    public int AvailableCount => RealApps.Count(a => !a.IsInstalled && !a.IsUnsupported);
+    public int AvailableCount => RealApps.Count(a => !a.IsInstalled && !a.IsUnsupported && !a.IsRestricted);
     public bool HasUpdates => UpdateCount > 0;
 
     /// <summary>Apps com atualização + o próprio launcher (para o selo da barra lateral).</summary>

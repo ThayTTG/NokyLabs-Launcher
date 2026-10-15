@@ -56,7 +56,8 @@ public static class LaunchService
     /// <summary>Abre um endereço da internet no navegador padrão.</summary>
     public static void OpenUrl(string url)
     {
-        if (!HttpHelper.IsWebUrl(url))
+        // Aceita também "mailto:" (ex.: pedir acesso a um app restrito por e-mail)
+        if (!HttpHelper.IsWebUrl(url) && !url.StartsWith("mailto:", StringComparison.OrdinalIgnoreCase))
             throw new LauncherException("Esse endereço não parece um link válido.");
 
         try

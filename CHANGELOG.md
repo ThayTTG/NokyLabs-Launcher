@@ -5,6 +5,7 @@ Tudo o que muda no NokyLabs Launcher, versão por versão. O texto de cada vers�
 **Como usar:** anote as mudanças em `## [Não lançado]` enquanto trabalha. Na hora de lançar, é só aumentar o `<Version>` no `.csproj` e enviar para o branch `release`: o lançamento usa essa seção e ela vira a seção da versão sozinha.
 
 ## [Não lançado]
+- Apps de uso restrito, como o Avaliador Acadêmico, agora mostram **Solicitar acesso** em vez de Instalar.
 
 ## [0.7.0] - 2026-10-15
 - Atualizar um app não apaga mais as configurações e os dados que ele guarda na própria pasta (como as notas do Avaliador Acadêmico e o filtro de conteúdo do YT-DLP GUI).

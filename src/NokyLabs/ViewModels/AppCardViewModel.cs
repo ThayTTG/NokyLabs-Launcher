@@ -103,13 +103,16 @@ public partial class AppCardViewModel : ObservableObject
         App.ComingSoon ? AppStatus.ComingSoon
         : !string.IsNullOrWhiteSpace(App.Web) ? AppStatus.Web
         : Installed is not null
-            ? (VersionHelper.IsNewer(LatestVersion, InstalledVersion) ? AppStatus.UpdateAvailable : AppStatus.Installed)
+            ? (!App.IsRestricted && VersionHelper.IsNewer(LatestVersion, InstalledVersion)
+                ? AppStatus.UpdateAvailable : AppStatus.Installed)
+        : App.IsRestricted ? AppStatus.Restricted
         : Download is null ? AppStatus.Unsupported
         : AppStatus.NotInstalled;
 
     public bool IsComingSoon => Status == AppStatus.ComingSoon;
     public bool IsUnsupported => Status == AppStatus.Unsupported;
     public bool IsWeb => Status == AppStatus.Web;
+    public bool IsRestricted => Status == AppStatus.Restricted;
     public bool IsInstalled => Status is AppStatus.Installed or AppStatus.UpdateAvailable;
     public bool HasUpdate => Status == AppStatus.UpdateAvailable;
 
@@ -124,6 +127,7 @@ public partial class AppCardViewModel : ObservableObject
     public string StatusText => IsRunning && IsInstalled ? "Rodando" : Status switch
     {
         AppStatus.Web => "No navegador",
+        AppStatus.Restricted => "Acesso restrito",
         AppStatus.Installed => "Instalado",
         AppStatus.UpdateAvailable => "Atualização",
         AppStatus.NotInstalled => "Disponível",
@@ -133,7 +137,7 @@ public partial class AppCardViewModel : ObservableObject
 
     public IBrush StatusBrush => IsRunning && IsInstalled ? SuccessBrush : Status switch
     {
-        AppStatus.Web => InfoBrush,
+        AppStatus.Web or AppStatus.Restricted => InfoBrush,
         AppStatus.Installed => SuccessBrush,
         AppStatus.UpdateAvailable => WarningBrush,
         AppStatus.NotInstalled => PrimaryLightBrush,
@@ -142,7 +146,7 @@ public partial class AppCardViewModel : ObservableObject
 
     public IBrush StatusSoftBrush => IsRunning && IsInstalled ? SuccessSoftBrush : Status switch
     {
-        AppStatus.Web => InfoSoftBrush,
+        AppStatus.Web or AppStatus.Restricted => InfoSoftBrush,
         AppStatus.Installed => SuccessSoftBrush,
         AppStatus.UpdateAvailable => WarningSoftBrush,
         AppStatus.NotInstalled => PrimarySoftBrush,
@@ -152,6 +156,7 @@ public partial class AppCardViewModel : ObservableObject
     public string VersionText => Status switch
     {
         AppStatus.Web => "Roda direto no navegador, sem instalar",
+        AppStatus.Restricted => "Uso restrito · peça acesso para receber",
         AppStatus.Installed when InstalledVersion == VersionHelper.Unknown => "Instalado · versão desconhecida",
         AppStatus.Installed => $"v{InstalledVersion} · em dia",
         AppStatus.UpdateAvailable => $"v{InstalledVersion}  →  v{LatestVersion}",
@@ -168,6 +173,7 @@ public partial class AppCardViewModel : ObservableObject
         : Status switch
         {
             AppStatus.Web => string.IsNullOrWhiteSpace(App.WebAction) ? "Abrir no navegador" : App.WebAction!,
+            AppStatus.Restricted => string.IsNullOrWhiteSpace(App.RequestAction) ? "Solicitar acesso" : App.RequestAction!,
             AppStatus.Installed => "Abrir",
             AppStatus.UpdateAvailable when IsDownloadPending => "Atualização em breve",
             AppStatus.UpdateAvailable => "Atualizar",
@@ -185,7 +191,7 @@ public partial class AppCardViewModel : ObservableObject
     public string? RunningTip => IsRunningAction ? $"O {Name} está aberto. Clique para encerrar." : null;
     public bool IsOpenAction => !IsRunningAction && Status is AppStatus.Installed or AppStatus.Web;
     public bool IsUpdateAction => !IsRunningAction && Status == AppStatus.UpdateAvailable;
-    public bool IsInstallAction => Status is AppStatus.NotInstalled or AppStatus.Unsupported or AppStatus.ComingSoon;
+    public bool IsInstallAction => Status is AppStatus.NotInstalled or AppStatus.Unsupported or AppStatus.ComingSoon or AppStatus.Restricted;
 
     partial void OnInstalledChanged(InstallManifest? value) => RaiseStateChanged();
 
@@ -195,7 +201,7 @@ public partial class AppCardViewModel : ObservableObject
     {
         foreach (var name in new[]
                  {
-                     nameof(InstalledVersion), nameof(Status), nameof(IsComingSoon), nameof(IsUnsupported), nameof(IsWeb),
+                     nameof(InstalledVersion), nameof(Status), nameof(IsComingSoon), nameof(IsUnsupported), nameof(IsWeb), nameof(IsRestricted),
                      nameof(IsRunningAction),
                      nameof(IsInstalled), nameof(HasUpdate), nameof(StatusText), nameof(StatusBrush),
                      nameof(StatusSoftBrush), nameof(VersionText), nameof(ActionText),
@@ -235,6 +241,7 @@ public partial class AppCardViewModel : ObservableObject
         !IsBusy && !IsStopping && Status switch
         {
             AppStatus.Web => true,
+            AppStatus.Restricted => true,
             AppStatus.Installed => true,
             AppStatus.UpdateAvailable or AppStatus.NotInstalled => !IsDownloadPending,
             _ => false
@@ -254,6 +261,10 @@ public partial class AppCardViewModel : ObservableObject
         {
             case AppStatus.Web:
                 OpenWeb();
+                break;
+
+            case AppStatus.Restricted:
+                OpenRequestAccess();
                 break;
 
             case AppStatus.Installed:
@@ -350,6 +361,19 @@ public partial class AppCardViewModel : ObservableObject
         {
             LaunchService.OpenUrl(App.Web!);
             _report($"{Name} aberto no navegador.");
+        }
+        catch (LauncherException ex)
+        {
+            _report(ex.Message);
+        }
+    }
+
+    private void OpenRequestAccess()
+    {
+        try
+        {
+            LaunchService.OpenUrl(App.RequestAccess!);
+            _report($"Abrindo o pedido de acesso ao {Name}.");
         }
         catch (LauncherException ex)
         {

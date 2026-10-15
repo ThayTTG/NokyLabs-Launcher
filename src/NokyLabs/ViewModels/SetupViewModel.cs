@@ -108,7 +108,7 @@ public partial class SetupViewModel : ObservableObject
         HasPreviousData = SetupService.HasPreviousData(_appsFolder);
 
         // Apps do catálogo (embutido ou a última cópia online)
-        foreach (var app in CatalogService.LoadLocal(previous.CatalogUrl).Catalog.Apps.Where(a => !a.ComingSoon))
+        foreach (var app in CatalogService.LoadLocal(previous.CatalogUrl).Catalog.Apps.Where(a => !a.ComingSoon && !a.IsRestricted))
             Apps.Add(new SetupAppItem(app));
 
         Steps = new ObservableCollection<SetupStepItem>
