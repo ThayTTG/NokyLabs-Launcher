@@ -1,0 +1,45 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="NokyLabs.Views.NotificationWindow"
+        Title="NokyLabs"
+        Width="380" Height="96"
+        SystemDecorations="None"
+        CanResize="False"
+        Topmost="True"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        WindowStartupLocation="Manual"
+        Background="{DynamicResource SurfaceBrush}"
+        Foreground="{DynamicResource TextBrush}">
+
+  <!-- Avisozinho no canto da tela. Clicar abre o launcher; some sozinho depois de alguns segundos. -->
+  <Border BorderBrush="{DynamicResource PrimaryBrush}" BorderThickness="1"
+          Background="Transparent" Cursor="Hand"
+          PointerPressed="OnBodyPressed">
+    <Grid ColumnDefinitions="Auto,*,Auto" Margin="16,0,10,0">
+
+      <Border Width="44" Height="44" CornerRadius="12" VerticalAlignment="Center"
+              Background="{DynamicResource BrandGradient}">
+        <Viewbox Width="24" Height="24">
+          <Path Classes="icon" Data="{DynamicResource IconLogo}" Stroke="White" StrokeThickness="2.9" />
+        </Viewbox>
+      </Border>
+
+      <StackPanel Grid.Column="1" Margin="14,0,8,0" Spacing="3" VerticalAlignment="Center">
+        <TextBlock x:Name="TitleText" FontSize="14" FontWeight="SemiBold"
+                   TextTrimming="CharacterEllipsis" />
+        <TextBlock x:Name="MessageText" Classes="secondary" TextWrapping="Wrap"
+                   MaxLines="2" TextTrimming="CharacterEllipsis" />
+      </StackPanel>
+
+      <Button Grid.Column="2" Classes="ghost" BorderThickness="0" Padding="6"
+              VerticalAlignment="Top" Margin="0,10,0,0"
+              Click="OnCloseClick" ToolTip.Tip="Fechar">
+        <Viewbox Width="12" Height="12">
+          <Path Classes="icon" Data="M6,6 L18,18 M18,6 L6,18" Stroke="{DynamicResource TextMutedBrush}" />
+        </Viewbox>
+      </Button>
+
+    </Grid>
+  </Border>
+</Window>

@@ -1,0 +1,28 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="NokyLabs.App"
+             RequestedThemeVariant="Dark">
+
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://NokyLabs/Styles/Colors.axaml" />
+        <ResourceInclude Source="avares://NokyLabs/Styles/Icons.axaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
+
+  <Application.Styles>
+    <FluentTheme>
+      <!-- Faz os controles padrão (TextBox, ToggleSwitch, ProgressBar...) usarem o roxo do NokyLabs -->
+      <FluentTheme.Palettes>
+        <ColorPaletteResources x:Key="Dark"
+                               Accent="#8B5CF6"
+                               RegionColor="#0F0B1A"
+                               ErrorText="#F87171" />
+      </FluentTheme.Palettes>
+    </FluentTheme>
+    <StyleInclude Source="avares://NokyLabs/Styles/Controls.axaml" />
+  </Application.Styles>
+
+</Application>

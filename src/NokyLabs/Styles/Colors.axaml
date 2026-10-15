@@ -1,0 +1,72 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- ===================== Paleta NokyLabs (roxo escuro) ===================== -->
+  <!-- Mude as cores aqui e o launcher inteiro acompanha. -->
+
+  <!-- Fundos, do mais escuro para o mais claro -->
+  <Color x:Key="BgColor">#0F0B1A</Color>
+  <Color x:Key="SidebarColor">#140F24</Color>
+  <Color x:Key="SurfaceColor">#1B1530</Color>
+  <Color x:Key="SurfaceHoverColor">#231B3E</Color>
+  <Color x:Key="SurfaceRaisedColor">#2A2149</Color>
+  <Color x:Key="BorderColor">#2C2347</Color>
+
+  <!-- Roxo principal -->
+  <Color x:Key="PrimaryColor">#8B5CF6</Color>
+  <Color x:Key="PrimaryHoverColor">#9D74FF</Color>
+  <Color x:Key="PrimaryPressedColor">#7646E6</Color>
+  <Color x:Key="PrimaryLightColor">#C4B5FD</Color>
+
+  <!-- Texto -->
+  <Color x:Key="TextColor">#F2EEFF</Color>
+  <Color x:Key="TextSecondaryColor">#A99FC7</Color>
+  <Color x:Key="TextMutedColor">#6E6491</Color>
+
+  <!-- Estados -->
+  <Color x:Key="SuccessColor">#34D399</Color>
+  <Color x:Key="WarningColor">#FBBF24</Color>
+  <Color x:Key="DangerColor">#F87171</Color>
+
+  <SolidColorBrush x:Key="BgBrush" Color="{StaticResource BgColor}" />
+  <SolidColorBrush x:Key="SidebarBrush" Color="{StaticResource SidebarColor}" />
+  <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}" />
+  <SolidColorBrush x:Key="SurfaceHoverBrush" Color="{StaticResource SurfaceHoverColor}" />
+  <SolidColorBrush x:Key="SurfaceRaisedBrush" Color="{StaticResource SurfaceRaisedColor}" />
+  <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}" />
+
+  <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}" />
+  <SolidColorBrush x:Key="PrimaryHoverBrush" Color="{StaticResource PrimaryHoverColor}" />
+  <SolidColorBrush x:Key="PrimaryPressedBrush" Color="{StaticResource PrimaryPressedColor}" />
+  <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLightColor}" />
+  <SolidColorBrush x:Key="PrimarySoftBrush" Color="{StaticResource PrimaryColor}" Opacity="0.16" />
+  <SolidColorBrush x:Key="PrimarySoftHoverBrush" Color="{StaticResource PrimaryColor}" Opacity="0.26" />
+
+  <SolidColorBrush x:Key="TextBrush" Color="{StaticResource TextColor}" />
+  <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}" />
+  <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource TextMutedColor}" />
+
+  <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}" />
+  <SolidColorBrush x:Key="SuccessSoftBrush" Color="{StaticResource SuccessColor}" Opacity="0.14" />
+
+  <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource WarningColor}" />
+  <SolidColorBrush x:Key="WarningSoftBrush" Color="{StaticResource WarningColor}" Opacity="0.14" />
+  <SolidColorBrush x:Key="WarningSoftHoverBrush" Color="{StaticResource WarningColor}" Opacity="0.24" />
+
+  <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
+  <SolidColorBrush x:Key="DangerSoftBrush" Color="{StaticResource DangerColor}" Opacity="0.14" />
+
+  <!-- Gradiente da marca (logo "n") -->
+  <LinearGradientBrush x:Key="BrandGradient" StartPoint="0%,0%" EndPoint="100%,100%">
+    <GradientStop Offset="0" Color="#6D28D9" />
+    <GradientStop Offset="1" Color="#C084FC" />
+  </LinearGradientBrush>
+
+  <!-- Gradiente do banner da Biblioteca -->
+  <LinearGradientBrush x:Key="HeroGradient" StartPoint="0%,0%" EndPoint="100%,100%">
+    <GradientStop Offset="0" Color="#4C1D95" />
+    <GradientStop Offset="0.55" Color="#2E1A5E" />
+    <GradientStop Offset="1" Color="#1B1530" />
+  </LinearGradientBrush>
+
+</ResourceDictionary>

@@ -1,0 +1,112 @@
+name: Build e Release
+
+# Lança uma versão nova do NokyLabs Launcher para Windows e Linux.
+#
+# Como disparar:
+#   • enviar qualquer commit para o branch "release"  → a tag vem do <Version> do .csproj
+#   • ou enviar uma tag no formato v1.2.3
+#
+# Arquivos publicados (nomes fixos, usados pelo site e pela autoatualização):
+#   NokyLabs-win-x64.zip    → NokyLabs.exe
+#   NokyLabs-linux-x64.zip  → NokyLabs
+on:
+  push:
+    branches:
+      - release
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  PROJETO: src/NokyLabs/NokyLabs.csproj
+
+jobs:
+  versao:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.v.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        run: |
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            echo "tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          else
+            v=$(grep -oPm1 '(?<=<Version>)[^<]+' "$PROJETO")
+            echo "tag=v$v" >> "$GITHUB_OUTPUT"
+          fi
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Publicar (win-x64, arquivo único)
+        run: >
+          dotnet publish ${{ env.PROJETO }} -c Release -r win-x64 --self-contained true
+          -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none
+          -o publish
+      - name: Compactar
+        shell: pwsh
+        run: Compress-Archive -Path publish\NokyLabs.exe -DestinationPath NokyLabs-win-x64.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: NokyLabs-win-x64.zip
+
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Publicar (linux-x64, arquivo único)
+        run: >
+          dotnet publish ${{ env.PROJETO }} -c Release -r linux-x64 --self-contained true
+          -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none
+          -o publish
+      - name: Compactar (mantendo a permissão de execução)
+        run: |
+          chmod +x publish/NokyLabs
+          cd publish && zip -9 ../NokyLabs-linux-x64.zip NokyLabs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: NokyLabs-linux-x64.zip
+
+  release:
+    needs: [versao, windows, linux]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+      - name: Calcular SHA-256
+        run: sha256sum NokyLabs-*.zip | tee SHA256SUMS.txt
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.versao.outputs.tag }}
+          name: NokyLabs Launcher ${{ needs.versao.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+          files: |
+            NokyLabs-win-x64.zip
+            NokyLabs-linux-x64.zip
+            SHA256SUMS.txt
+          body: |
+            ## NokyLabs Launcher ${{ needs.versao.outputs.tag }}
+
+            Instale, abra e mantenha todos os apps da NokyLabs atualizados, num só lugar.
+
+            **Windows:** baixe o `NokyLabs-win-x64.zip`, extraia e abra o `NokyLabs.exe`. O assistente cuida do resto.
+            Se aparecer o aviso azul do Windows, clique em "Mais informações" › "Executar assim mesmo".
+
+            **Linux:** baixe o `NokyLabs-linux-x64.zip`, extraia e rode `./NokyLabs`.
+
+            Não precisa instalar o .NET. Mais detalhes: https://thayttg.github.io/nokylabs/#launcher

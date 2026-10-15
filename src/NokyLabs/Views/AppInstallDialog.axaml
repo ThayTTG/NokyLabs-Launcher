@@ -1,0 +1,66 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:NokyLabs.ViewModels"
+        x:Class="NokyLabs.Views.AppInstallDialog"
+        x:DataType="vm:AppInstallDialogViewModel"
+        Title="{Binding Name, StringFormat='Instalar {0}'}"
+        Icon="/Assets/nokylabs.ico"
+        Width="480" SizeToContent="Height"
+        CanResize="False"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource BgBrush}"
+        Foreground="{DynamicResource TextBrush}">
+
+  <StackPanel Margin="28,26" Spacing="18">
+
+    <!-- App -->
+    <Grid ColumnDefinitions="Auto,*">
+      <Border Width="56" Height="56" CornerRadius="16" Background="{Binding AccentSoftBrush}">
+        <Viewbox Width="28" Height="28">
+          <Path Classes="icon" Data="{Binding IconGeometry}" Stroke="{Binding AccentBrush}" />
+        </Viewbox>
+      </Border>
+      <StackPanel Grid.Column="1" Margin="16,0,0,0" Spacing="2" VerticalAlignment="Center">
+        <TextBlock Text="{Binding Name}" FontSize="20" FontWeight="Bold" />
+        <TextBlock Classes="muted" Text="{Binding VersionText}" />
+      </StackPanel>
+    </Grid>
+
+    <TextBlock Classes="secondary" TextWrapping="Wrap" Text="{Binding Description}" />
+
+    <!-- Destino -->
+    <Border Classes="card" Padding="14,12">
+      <StackPanel Spacing="4">
+        <TextBlock Text="Será instalado em" Classes="muted" />
+        <TextBlock Text="{Binding Destination}" FontSize="13" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding FreeSpace}" Classes="muted" />
+      </StackPanel>
+    </Border>
+
+    <!-- Opções -->
+    <StackPanel Spacing="10">
+      <TextBlock Classes="h2" Text="Opções" />
+      <CheckBox IsChecked="{Binding DesktopShortcut, Mode=TwoWay}" IsEnabled="{Binding CanCreateShortcuts}"
+                Content="Criar atalho na Área de Trabalho" />
+      <CheckBox IsChecked="{Binding MenuShortcut, Mode=TwoWay}" IsEnabled="{Binding CanCreateShortcuts}"
+                Content="{Binding MenuText}" />
+      <CheckBox IsChecked="{Binding OpenAfterInstall, Mode=TwoWay}"
+                Content="Abrir assim que terminar de instalar" />
+    </StackPanel>
+
+    <Border Classes="divider" />
+
+    <Grid ColumnDefinitions="*,Auto">
+      <CheckBox IsChecked="{Binding RememberChoices, Mode=TwoWay}" VerticalAlignment="Center">
+        <TextBlock Classes="secondary" TextWrapping="Wrap" FontSize="12"
+                   Text="Lembrar e não perguntar de novo (dá para mudar em Configurações)" />
+      </CheckBox>
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" Margin="12,0,0,0">
+        <Button Classes="ghost" Content="Cancelar" Click="OnCancel" />
+        <Button Classes="primary" Content="Instalar" MinWidth="110" Click="OnInstall" IsDefault="True" />
+      </StackPanel>
+    </Grid>
+
+  </StackPanel>
+</Window>

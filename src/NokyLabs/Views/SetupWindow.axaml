@@ -1,0 +1,484 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:NokyLabs.ViewModels"
+        xmlns:svc="using:NokyLabs.Services"
+        xmlns:sys="using:System"
+        x:Class="NokyLabs.Views.SetupWindow"
+        x:DataType="vm:SetupViewModel"
+        Title="Instalar o NokyLabs"
+        Icon="/Assets/nokylabs.ico"
+        Width="920" Height="620"
+        CanResize="False"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource BgBrush}"
+        Foreground="{DynamicResource TextBrush}">
+
+  <Window.Styles>
+    <Style Selector="TextBlock.stepTitle">
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+      <Setter Property="FontSize" Value="14" />
+    </Style>
+    <Style Selector="TextBlock.stepTitle.current">
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.warning">
+      <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+    </Style>
+    <Style Selector="TextBlock.pageTitle">
+      <Setter Property="FontSize" Value="24" />
+      <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+  </Window.Styles>
+
+  <Grid ColumnDefinitions="260,*">
+
+    <!-- ╔══════════════ TRILHA DE ETAPAS ══════════════╗ -->
+    <Border Background="{DynamicResource SidebarBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0">
+      <DockPanel Margin="24,26,20,20">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="0,0,0,34">
+          <Border Width="40" Height="40" CornerRadius="12" Background="{DynamicResource BrandGradient}">
+            <Viewbox Width="24" Height="24">
+              <Path Classes="icon" Data="{DynamicResource IconLogo}" Stroke="White" StrokeThickness="2.9" />
+            </Viewbox>
+          </Border>
+          <StackPanel VerticalAlignment="Center">
+            <TextBlock Text="NokyLabs" FontSize="17" FontWeight="Bold" />
+            <TextBlock Text="{Binding VersionText, StringFormat='Instalação · {0}'}" Classes="muted" />
+          </StackPanel>
+        </StackPanel>
+
+        <TextBlock DockPanel.Dock="Bottom" Classes="muted" TextWrapping="Wrap"
+                   Text="Você pode mudar tudo isso depois, em Configurações." />
+
+        <ItemsControl ItemsSource="{Binding Steps}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:SetupStepItem">
+              <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,14">
+                <Panel Width="30" Height="30">
+                  <Ellipse Fill="{DynamicResource SurfaceRaisedBrush}" />
+                  <Ellipse Fill="{DynamicResource PrimarySoftHoverBrush}" IsVisible="{Binding IsDone}" />
+                  <Ellipse Fill="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsCurrent}" />
+                  <TextBlock Text="{Binding Number}" FontSize="12" FontWeight="Bold"
+                             HorizontalAlignment="Center" VerticalAlignment="Center"
+                             IsVisible="{Binding !IsDone}" />
+                  <Viewbox Width="14" Height="14" IsVisible="{Binding IsDone}">
+                    <Path Classes="icon" Data="{DynamicResource IconCheck}" Stroke="{DynamicResource PrimaryLightBrush}" StrokeThickness="3" />
+                  </Viewbox>
+                </Panel>
+                <TextBlock Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center"
+                           Classes="stepTitle" Classes.current="{Binding IsCurrent}"
+                           Text="{Binding Title}" />
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </DockPanel>
+    </Border>
+
+    <!-- ╔══════════════ CONTEÚDO ══════════════╗ -->
+    <Grid Grid.Column="1" RowDefinitions="*,Auto">
+
+      <ScrollViewer Grid.Row="0">
+        <Panel Margin="40,34,40,20">
+
+          <!-- ───────── 0. Boas-vindas ───────── -->
+          <StackPanel Spacing="18" IsVisible="{Binding IsWelcomeStep}">
+            <StackPanel Spacing="6">
+              <TextBlock Classes="pageTitle" Text="Boas-vindas ao NokyLabs" />
+              <TextBlock Classes="secondary" TextWrapping="Wrap"
+                         Text="Seus utilitários num só lugar: instale, abra e mantenha tudo atualizado. Vamos deixar tudo do seu jeito em poucos passos." />
+            </StackPanel>
+
+            <Border Classes="notice" IsVisible="{Binding IsSimulation}">
+              <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding SimulationText}" />
+            </Border>
+            <Border Classes="notice" IsVisible="{Binding IsAlreadyInstalled}">
+              <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding AlreadyInstalledText}" />
+            </Border>
+
+            <TextBlock Classes="h2" Text="Como você quer usar?" Margin="0,6,0,0" />
+
+            <RadioButton Classes="choice" GroupName="mode" IsChecked="{Binding IsInstallMode, Mode=TwoWay}">
+              <Grid ColumnDefinitions="Auto,*">
+                <Border Width="44" Height="44" CornerRadius="12" Background="{DynamicResource PrimarySoftBrush}" VerticalAlignment="Top">
+                  <Viewbox Width="22" Height="22">
+                    <Path Classes="icon" Data="{DynamicResource IconInstall}" Stroke="{DynamicResource PrimaryLightBrush}" />
+                  </Viewbox>
+                </Border>
+                <StackPanel Grid.Column="1" Margin="14,0,0,0" Spacing="3">
+                  <TextBlock Text="Instalar neste computador (recomendado)" FontSize="15" FontWeight="SemiBold" />
+                  <TextBlock Classes="secondary" TextWrapping="Wrap"
+                             Text="Copia o NokyLabs para uma pasta fixa, cria atalhos, aparece em Aplicativos instalados e pode iniciar junto com o sistema." />
+                </StackPanel>
+              </Grid>
+            </RadioButton>
+
+            <RadioButton Classes="choice" GroupName="mode" IsChecked="{Binding IsPortableMode, Mode=TwoWay}">
+              <Grid ColumnDefinitions="Auto,*">
+                <Border Width="44" Height="44" CornerRadius="12" Background="{DynamicResource PrimarySoftBrush}" VerticalAlignment="Top">
+                  <Viewbox Width="22" Height="22">
+                    <Path Classes="icon" Data="{DynamicResource IconPortable}" Stroke="{DynamicResource PrimaryLightBrush}" />
+                  </Viewbox>
+                </Border>
+                <StackPanel Grid.Column="1" Margin="14,0,0,0" Spacing="3">
+                  <TextBlock Text="Usar sem instalar (modo portátil)" FontSize="15" FontWeight="SemiBold" />
+                  <TextBlock Classes="secondary" TextWrapping="Wrap"
+                             Text="Roda direto da pasta onde está, guardando configurações e apps ao lado dele. Ótimo para pendrive; não mexe no sistema." />
+                </StackPanel>
+              </Grid>
+            </RadioButton>
+          </StackPanel>
+
+          <!-- ───────── 1. Local ───────── -->
+          <StackPanel Spacing="18" IsVisible="{Binding IsLocationStep}">
+            <StackPanel Spacing="6">
+              <TextBlock Classes="pageTitle" Text="{Binding LocationTitle}" />
+              <TextBlock Classes="secondary" TextWrapping="Wrap"
+                         Text="As pastas sugeridas não precisam de permissão de administrador." />
+            </StackPanel>
+
+            <Border Classes="card" IsVisible="{Binding IsInstallMode}">
+              <StackPanel Spacing="10">
+                <TextBlock Classes="h2" Text="Pasta do NokyLabs" />
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBox Classes="field" Text="{Binding InstallFolder}" />
+                  <Button Grid.Column="1" Classes="soft" Content="Escolher…" Margin="10,0,0,0" Click="OnPickInstallFolder" />
+                </Grid>
+                <TextBlock Classes="muted" Text="{Binding InstallFreeSpace}" />
+              </StackPanel>
+            </Border>
+
+            <Border Classes="notice" IsVisible="{Binding IsPortable}">
+              <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding PortableFolderText}" />
+            </Border>
+
+            <Border Classes="card">
+              <StackPanel Spacing="10">
+                <TextBlock Classes="h2" Text="Pasta dos apps" />
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBox Classes="field" Text="{Binding AppsFolder}" />
+                  <Button Grid.Column="1" Classes="soft" Content="Escolher…" Margin="10,0,0,0" Click="OnPickAppsFolder" />
+                </Grid>
+                <TextBlock Classes="muted" TextWrapping="Wrap" Text="{Binding AppsFolderHint}" />
+                <TextBlock Classes="muted" Text="{Binding AppsFreeSpace}" />
+              </StackPanel>
+            </Border>
+
+            <!-- Instalação limpa (só aparece se houver algo de antes) -->
+            <StackPanel Spacing="10" IsVisible="{Binding HasPreviousData}">
+              <TextBlock Classes="h2" Text="Encontrei uma instalação anterior" />
+              <RadioButton Classes="choice" GroupName="clean" IsChecked="{Binding KeepPreviousData, Mode=TwoWay}">
+                <StackPanel Spacing="3">
+                  <TextBlock Text="Manter configurações e apps (recomendado)" FontWeight="SemiBold" />
+                  <TextBlock Classes="secondary" TextWrapping="Wrap" Text="Tudo continua como estava: preferências, catálogo e apps instalados." />
+                </StackPanel>
+              </RadioButton>
+              <RadioButton Classes="choice" GroupName="clean" IsChecked="{Binding CleanInstall, Mode=TwoWay}">
+                <StackPanel Spacing="3">
+                  <TextBlock Text="Instalação limpa" FontWeight="SemiBold" Foreground="{DynamicResource DangerBrush}" />
+                  <TextBlock Classes="secondary" TextWrapping="Wrap"
+                             Text="Apaga configurações, cache, atalhos e os apps instalados pelo NokyLabs antes de instalar. Arquivos seus fora dessas pastas não são tocados." />
+                </StackPanel>
+              </RadioButton>
+            </StackPanel>
+          </StackPanel>
+
+          <!-- ───────── 2. Integração ───────── -->
+          <StackPanel Spacing="18" IsVisible="{Binding IsIntegrationStep}">
+            <StackPanel Spacing="6">
+              <TextBlock Classes="pageTitle" Text="Atalhos e sistema" />
+              <TextBlock Classes="secondary" TextWrapping="Wrap" Text="Escolha como o NokyLabs aparece no seu computador." />
+            </StackPanel>
+
+            <Border Classes="notice" IsVisible="{Binding IsPortable}">
+              <TextBlock TextWrapping="Wrap" FontSize="13"
+                         Text="No modo portátil, o NokyLabs não cria atalhos, não se registra no sistema e não inicia sozinho. Só a bandeja continua disponível." />
+            </Border>
+
+            <Border Classes="card">
+              <StackPanel Spacing="14">
+                <StackPanel Spacing="14" IsVisible="{Binding IsInstallMode}">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                        <TextBlock Text="Atalho na Área de Trabalho" FontWeight="Medium" />
+                        <TextBlock Classes="muted" TextWrapping="Wrap" Text="Um ícone do NokyLabs na sua Área de Trabalho." />
+                      </StackPanel>
+                      <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                    IsChecked="{Binding DesktopShortcut, Mode=TwoWay}" />
+                    </Grid>
+                    <Border Classes="divider" />
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                        <TextBlock Text="{Binding MenuLabel, StringFormat='Atalho no {0}'}" FontWeight="Medium" />
+                        <TextBlock Classes="muted" TextWrapping="Wrap" Text="Para achar o NokyLabs pesquisando pelo nome." />
+                      </StackPanel>
+                      <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                    IsChecked="{Binding MenuShortcut, Mode=TwoWay}" />
+                    </Grid>
+                    <Border Classes="divider" />
+                    <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding CanRegisterInSystem}">
+                      <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                        <TextBlock Text="Aparecer em Aplicativos instalados" FontWeight="Medium" />
+                        <TextBlock Classes="muted" TextWrapping="Wrap" Text="Com versão, editor e um botão Desinstalar nas Configurações do Windows." />
+                      </StackPanel>
+                      <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                    IsChecked="{Binding RegisterInSystem, Mode=TwoWay}" />
+                    </Grid>
+                  <Border Classes="divider" IsVisible="{Binding CanRegisterInSystem}" />
+                    <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding CanStartWithSystem}">
+                      <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                        <TextBlock Text="Iniciar com o sistema" FontWeight="Medium" />
+                        <TextBlock Classes="muted" TextWrapping="Wrap" Text="Abre já minimizado quando você entra no computador (aparece no Gerenciador de Tarefas › Inicializar)." />
+                      </StackPanel>
+                      <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                    IsChecked="{Binding StartWithSystem, Mode=TwoWay}" />
+                    </Grid>
+                    <Border Classes="divider" />
+                </StackPanel>
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="Ficar na bandeja ao fechar" FontWeight="Medium" />
+                    <TextBlock Classes="muted" TextWrapping="Wrap" Text="Fechar a janela deixa o NokyLabs rodando no ícone da bandeja." />
+                  </StackPanel>
+                  <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                IsChecked="{Binding MinimizeToTray, Mode=TwoWay}" />
+                </Grid>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+
+          <!-- ───────── 3. Apps ───────── -->
+          <StackPanel Spacing="18" IsVisible="{Binding IsAppsStep}">
+            <StackPanel Spacing="6">
+              <TextBlock Classes="pageTitle" Text="Apps para instalar agora" />
+              <TextBlock Classes="secondary" TextWrapping="Wrap" Text="Marque os utilitários que já quer deixar prontos. Os outros podem ser instalados depois pelo launcher." />
+            </StackPanel>
+
+            <Border Classes="notice" IsVisible="{Binding HasNoAvailableApps}">
+              <TextBlock TextWrapping="Wrap" FontSize="13"
+                         Text="Os downloads ainda não foram publicados. Assim que estiverem no catálogo, é só instalar pelo launcher." />
+            </Border>
+
+            <ItemsControl ItemsSource="{Binding Apps}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Spacing="10" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:SetupAppItem">
+                  <Border Classes="card" Padding="14,12">
+                    <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+                      <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                IsEnabled="{Binding IsAvailable}" />
+                      <Border Grid.Column="1" Width="40" Height="40" CornerRadius="11" Margin="4,0,14,0"
+                              Background="{Binding AccentSoftBrush}">
+                        <Viewbox Width="20" Height="20">
+                          <Path Classes="icon" Data="{Binding IconGeometry}" Stroke="{Binding AccentBrush}" />
+                        </Viewbox>
+                      </Border>
+                      <StackPanel Grid.Column="2" Spacing="2" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                        <TextBlock Classes="muted" Text="{Binding Description}" TextTrimming="CharacterEllipsis" />
+                      </StackPanel>
+                      <TextBlock Grid.Column="3" Classes="muted" VerticalAlignment="Center" Margin="12,0,0,0"
+                                 Text="{Binding Note}" />
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Border Classes="card">
+              <StackPanel Spacing="14">
+                <TextBlock Classes="h2" Text="Atalhos dos apps" />
+                <TextBlock Classes="muted" TextWrapping="Wrap" Margin="0,-8,0,0"
+                           Text="Vale para os apps instalados agora e vira o padrão das próximas instalações." />
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                        <TextBlock Text="Na Área de Trabalho" FontWeight="Medium" />
+                        <TextBlock Classes="muted" TextWrapping="Wrap" Text="Um ícone para cada app instalado." />
+                      </StackPanel>
+                      <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                    IsChecked="{Binding AppDesktopShortcuts, Mode=TwoWay}" />
+                    </Grid>
+                    <Border Classes="divider" />
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                        <TextBlock Text="{Binding MenuLabel, StringFormat='No {0}'}" FontWeight="Medium" />
+                        <TextBlock Classes="muted" TextWrapping="Wrap" Text="Cada app ganha um atalho dentro da pasta NokyLabs." />
+                      </StackPanel>
+                      <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                    IsChecked="{Binding AppMenuShortcuts, Mode=TwoWay}" />
+                    </Grid>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+
+          <!-- ───────── 4. Preferências ───────── -->
+          <StackPanel Spacing="18" IsVisible="{Binding IsPreferencesStep}">
+            <StackPanel Spacing="6">
+              <TextBlock Classes="pageTitle" Text="Preferências" />
+              <TextBlock Classes="secondary" TextWrapping="Wrap" Text="Como o NokyLabs cuida das atualizações e dos avisos." />
+            </StackPanel>
+
+            <Border Classes="card">
+              <StackPanel Spacing="14">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                        <TextBlock Text="Verificar atualizações ao abrir" FontWeight="Medium" />
+                        <TextBlock Classes="muted" TextWrapping="Wrap" Text="Procura versões novas sempre que o launcher iniciar." />
+                      </StackPanel>
+                      <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                    IsChecked="{Binding CheckUpdatesOnStartup, Mode=TwoWay}" />
+                    </Grid>
+                    <Border Classes="divider" />
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                        <TextBlock Text="Verificar de tempos em tempos" FontWeight="Medium" />
+                        <TextBlock Classes="muted" TextWrapping="Wrap" Text="Enquanto estiver aberto, procura sozinho por atualizações dos apps e dele mesmo." />
+                      </StackPanel>
+                      <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                    IsChecked="{Binding PeriodicCheck, Mode=TwoWay}" />
+                    </Grid>
+                    <Border Classes="divider" />
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                        <TextBlock Text="Avisar sobre novidades" FontWeight="Medium" />
+                        <TextBlock Classes="muted" TextWrapping="Wrap" Text="Mostra um aviso no canto da tela quando aparecer algo novo." />
+                      </StackPanel>
+                      <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                    IsChecked="{Binding ShowNotifications, Mode=TwoWay}" />
+                    </Grid>
+                    <Border Classes="divider" />
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                        <TextBlock Text="Atualizar apps automaticamente" FontWeight="Medium" />
+                        <TextBlock Classes="muted" TextWrapping="Wrap" Text="Instala as versões novas assim que forem encontradas." />
+                      </StackPanel>
+                      <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                    IsChecked="{Binding AutoUpdateApps, Mode=TwoWay}" />
+                    </Grid>
+                    <Border Classes="divider" />
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                        <TextBlock Text="Atualizar o launcher automaticamente" FontWeight="Medium" />
+                        <TextBlock Classes="muted" TextWrapping="Wrap" Text="Baixa a versão nova sozinho; ela vale na próxima abertura." />
+                      </StackPanel>
+                      <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                    IsChecked="{Binding AutoUpdateLauncher, Mode=TwoWay}" />
+                    </Grid>
+              </StackPanel>
+            </Border>
+
+            <Border Classes="card">
+              <StackPanel Spacing="10">
+                <TextBlock Classes="h2" Text="Catálogo de apps (opcional)" />
+                <TextBlock Classes="muted" TextWrapping="Wrap"
+                           Text="Link do catalogo.json publicado. Deixe vazio para usar o catálogo que vem dentro do launcher." />
+                <TextBox Classes="field" Text="{Binding CatalogUrl}"
+                         Watermark="https://thayttg.github.io/nokylabs/catalogo.json" />
+              </StackPanel>
+            </Border>
+          </StackPanel>
+
+          <!-- ───────── 5. Resumo ───────── -->
+          <StackPanel Spacing="18" IsVisible="{Binding IsSummaryStep}">
+            <StackPanel Spacing="6">
+              <TextBlock Classes="pageTitle" Text="Tudo certo para começar?" />
+              <TextBlock Classes="secondary" TextWrapping="Wrap" Text="Confira o que vai acontecer. Se quiser mudar algo, é só voltar." />
+            </StackPanel>
+
+            <Border Classes="card">
+              <ItemsControl ItemsSource="{Binding SummaryLines}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="sys:String">
+                    <Grid ColumnDefinitions="Auto,*" Margin="0,4">
+                      <Viewbox Width="15" Height="15" VerticalAlignment="Top" Margin="0,2,10,0">
+                        <Path Classes="icon" Data="{DynamicResource IconCheck}" Stroke="{DynamicResource PrimaryLightBrush}" StrokeThickness="2.6" />
+                      </Viewbox>
+                      <TextBlock Grid.Column="1" Text="{Binding}" TextWrapping="Wrap" />
+                    </Grid>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </Border>
+
+            <Border Classes="notice" IsVisible="{Binding IsSimulation}">
+              <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding SimulationText}" />
+            </Border>
+          </StackPanel>
+
+          <!-- ───────── 6. Instalando ───────── -->
+          <StackPanel Spacing="18" IsVisible="{Binding IsInstallingStep}">
+            <StackPanel Spacing="6">
+              <TextBlock Classes="pageTitle" Text="Instalando…" />
+              <TextBlock Classes="secondary" TextWrapping="Wrap" Text="{Binding CurrentAction}" />
+            </StackPanel>
+            <ProgressBar Classes="slim" Height="8" Minimum="0" Maximum="100" Value="{Binding Progress}" />
+            <Border Classes="card" Padding="16,12">
+              <ItemsControl ItemsSource="{Binding LogLines}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="svc:SetupProgress">
+                    <TextBlock Text="{Binding Message}" FontSize="12" TextWrapping="Wrap" Margin="0,2"
+                               Classes="secondary" Classes.warning="{Binding IsWarning}" />
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </Border>
+          </StackPanel>
+
+          <!-- ───────── 7. Concluído ───────── -->
+          <StackPanel Spacing="18" IsVisible="{Binding IsDoneStep}">
+            <Border Width="72" Height="72" CornerRadius="36" HorizontalAlignment="Left" Background="{DynamicResource BrandGradient}">
+              <Viewbox Width="34" Height="34">
+                <Path Classes="icon" Data="{DynamicResource IconCheck}" Stroke="White" StrokeThickness="2.6" />
+              </Viewbox>
+            </Border>
+            <StackPanel Spacing="6">
+              <TextBlock Classes="pageTitle" Text="{Binding DoneTitle}" />
+              <TextBlock Classes="secondary" TextWrapping="Wrap" Text="{Binding DoneText}" />
+            </StackPanel>
+
+            <Border Classes="notice danger" IsVisible="{Binding HasWarnings}">
+              <TextBlock TextWrapping="Wrap" FontSize="13"
+                         Text="Alguns itens não deram certo (veja os detalhes abaixo). O resto foi concluído normalmente." />
+            </Border>
+
+            <CheckBox IsChecked="{Binding OpenAfterFinish, Mode=TwoWay}" Content="Abrir o NokyLabs agora" />
+
+            <Expander Header="Ver detalhes da instalação" IsVisible="{Binding HasWarnings}">
+              <ItemsControl ItemsSource="{Binding LogLines}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="svc:SetupProgress">
+                    <TextBlock Text="{Binding Message}" FontSize="12" TextWrapping="Wrap" Margin="0,2"
+                               Classes="secondary" Classes.warning="{Binding IsWarning}" />
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </Expander>
+          </StackPanel>
+
+        </Panel>
+      </ScrollViewer>
+
+      <!-- ╔══════════════ RODAPÉ ══════════════╗ -->
+      <Border Grid.Row="1" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="40,14">
+        <Grid ColumnDefinitions="*,Auto">
+          <StackPanel VerticalAlignment="Center" Spacing="2">
+            <TextBlock Classes="muted" Text="{Binding StepHeader}" IsVisible="{Binding !IsDoneStep}" />
+            <TextBlock Text="{Binding ErrorText}" Foreground="{DynamicResource DangerBrush}" FontSize="12"
+                       TextWrapping="Wrap" MaxWidth="360" HorizontalAlignment="Left" />
+          </StackPanel>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+            <Button Classes="ghost" Content="Cancelar" Command="{Binding CancelCommand}" IsVisible="{Binding ShowCancel}" />
+            <Button Classes="ghost" Content="Voltar" Command="{Binding BackCommand}" IsVisible="{Binding ShowBack}" />
+            <Button Classes="primary" MinWidth="130" Content="{Binding NextText}" Command="{Binding NextCommand}"
+                    IsVisible="{Binding !IsInstallingStep}" />
+          </StackPanel>
+        </Grid>
+      </Border>
+    </Grid>
+  </Grid>
+</Window>

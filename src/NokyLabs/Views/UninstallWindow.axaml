@@ -1,0 +1,90 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:NokyLabs.ViewModels"
+        xmlns:svc="using:NokyLabs.Services"
+        x:Class="NokyLabs.Views.UninstallWindow"
+        x:DataType="vm:UninstallViewModel"
+        Title="Desinstalar o NokyLabs"
+        Icon="/Assets/nokylabs.ico"
+        Width="540" SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource BgBrush}"
+        Foreground="{DynamicResource TextBrush}">
+
+  <Window.Styles>
+    <Style Selector="TextBlock.warning">
+      <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+    </Style>
+  </Window.Styles>
+
+  <StackPanel Margin="30,28" Spacing="18">
+
+    <!-- Cabeçalho -->
+    <StackPanel Orientation="Horizontal" Spacing="14">
+      <Border Width="48" Height="48" CornerRadius="14" Background="{DynamicResource BrandGradient}">
+        <Viewbox Width="28" Height="28">
+          <Path Classes="icon" Data="{DynamicResource IconLogo}" Stroke="White" StrokeThickness="2.9" />
+        </Viewbox>
+      </Border>
+      <StackPanel VerticalAlignment="Center" Spacing="2">
+        <TextBlock Text="Desinstalar o NokyLabs" FontSize="20" FontWeight="Bold" />
+        <TextBlock Classes="muted" Text="{Binding InstallFolderText}" TextWrapping="Wrap" MaxWidth="400" />
+      </StackPanel>
+    </StackPanel>
+
+    <Border Classes="notice" IsVisible="{Binding IsSimulation}">
+      <TextBlock TextWrapping="Wrap" FontSize="13" Text="{Binding SimulationText}" />
+    </Border>
+
+    <!-- Confirmar -->
+    <StackPanel Spacing="14" IsVisible="{Binding IsConfirmStep}">
+      <TextBlock Classes="secondary" TextWrapping="Wrap"
+                 Text="Os atalhos, o início automático e o registro em Aplicativos instalados serão removidos. Escolha o que mais deve sair:" />
+
+      <Border Classes="card" Padding="16,14">
+        <StackPanel Spacing="12">
+          <CheckBox IsChecked="{Binding RemoveApps, Mode=TwoWay}">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Remover também os apps instalados pelo NokyLabs" FontWeight="Medium" />
+              <TextBlock Classes="muted" Text="{Binding AppsText}" TextWrapping="Wrap" />
+            </StackPanel>
+          </CheckBox>
+          <Border Classes="divider" />
+          <CheckBox IsChecked="{Binding RemoveData, Mode=TwoWay}">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Apagar configurações e cache" FontWeight="Medium" />
+              <TextBlock Classes="muted" TextWrapping="Wrap"
+                         Text="Desmarque se pretende instalar de novo e quer manter suas preferências." />
+            </StackPanel>
+          </CheckBox>
+        </StackPanel>
+      </Border>
+
+      <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+        <Button Classes="ghost" Content="Cancelar" Command="{Binding CancelCommand}" />
+        <Button Classes="danger" Content="Desinstalar" MinWidth="130" Command="{Binding UninstallCommand}" />
+      </StackPanel>
+    </StackPanel>
+
+    <!-- Removendo / concluído -->
+    <StackPanel Spacing="14" IsVisible="{Binding !IsConfirmStep}">
+      <ProgressBar Classes="slim" Height="8" Minimum="0" Maximum="100" Value="{Binding Progress}" />
+      <Border Classes="card" Padding="16,12">
+        <ItemsControl ItemsSource="{Binding LogLines}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="svc:SetupProgress">
+              <TextBlock Text="{Binding Message}" FontSize="12" TextWrapping="Wrap" Margin="0,2"
+                         Classes="secondary" Classes.warning="{Binding IsWarning}" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </Border>
+      <TextBlock IsVisible="{Binding IsDoneStep}" Classes="secondary" TextWrapping="Wrap"
+                 Text="Até a próxima! Ao fechar esta janela, os arquivos restantes do launcher são apagados." />
+      <Button Classes="primary" Content="Fechar" MinWidth="130" HorizontalAlignment="Right"
+              IsVisible="{Binding IsDoneStep}" Command="{Binding CloseCommand}" />
+    </StackPanel>
+
+  </StackPanel>
+</Window>

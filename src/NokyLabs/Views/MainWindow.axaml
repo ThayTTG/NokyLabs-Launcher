@@ -1,0 +1,617 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:NokyLabs.ViewModels"
+        xmlns:views="using:NokyLabs.Views"
+        mc:Ignorable="d" d:DesignWidth="1180" d:DesignHeight="740"
+        x:Class="NokyLabs.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="NokyLabs"
+        Icon="/Assets/nokylabs.ico"
+        Width="1180" Height="740"
+        MinWidth="940" MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource BgBrush}"
+        Foreground="{DynamicResource TextBrush}">
+
+  <Design.DataContext>
+    <vm:MainWindowViewModel />
+  </Design.DataContext>
+
+  <Grid ColumnDefinitions="248,*">
+
+    <!-- ╔══════════════════════ BARRA LATERAL ══════════════════════╗ -->
+    <Border Grid.Column="0"
+            Background="{DynamicResource SidebarBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="0,0,1,0">
+      <DockPanel Margin="16,22,16,16">
+
+        <!-- Logo -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="6,0,0,30">
+          <Border Width="42" Height="42" CornerRadius="13" Background="{DynamicResource BrandGradient}">
+            <Viewbox Width="26" Height="26">
+              <Path Classes="icon" Data="{DynamicResource IconLogo}" Stroke="White" StrokeThickness="2.9" />
+            </Viewbox>
+          </Border>
+          <StackPanel VerticalAlignment="Center" Spacing="1">
+            <TextBlock Text="NokyLabs" FontSize="18" FontWeight="Bold" />
+            <TextBlock Text="Launcher" Classes="muted" />
+          </StackPanel>
+        </StackPanel>
+
+        <!-- Cartão de versão (rodapé da barra lateral) -->
+        <Border DockPanel.Dock="Bottom"
+                Background="{DynamicResource SurfaceBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="1" CornerRadius="12" Padding="14,12">
+          <StackPanel Spacing="2">
+            <TextBlock Text="NokyLabs Launcher" FontSize="12" FontWeight="SemiBold" />
+            <TextBlock Classes="muted" Text="{Binding AppVersion, StringFormat='{}{0} · prévia'}" />
+          </StackPanel>
+        </Border>
+
+        <!-- Navegação -->
+        <StackPanel Spacing="4">
+          <TextBlock Text="MENU" Classes="muted" FontSize="11" FontWeight="SemiBold"
+                     Margin="12,0,0,8" />
+
+          <RadioButton Classes="nav" GroupName="nav"
+                       IsChecked="{Binding IsLibraryPage, Mode=TwoWay}">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+              <Viewbox Width="18" Height="18">
+                <Path Classes="icon" Data="{DynamicResource IconLibrary}" />
+              </Viewbox>
+              <TextBlock Text="Biblioteca" VerticalAlignment="Center" />
+            </StackPanel>
+          </RadioButton>
+
+          <RadioButton Classes="nav" GroupName="nav"
+                       IsChecked="{Binding IsUpdatesPage, Mode=TwoWay}">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <Viewbox Width="18" Height="18">
+                <Path Classes="icon" Data="{DynamicResource IconUpdates}" />
+              </Viewbox>
+              <TextBlock Grid.Column="1" Text="Atualizações" Margin="12,0,0,0" VerticalAlignment="Center" />
+              <Border Grid.Column="2" IsVisible="{Binding HasAnyUpdate}"
+                      Background="{DynamicResource WarningSoftBrush}"
+                      CornerRadius="999" Padding="8,1" VerticalAlignment="Center">
+                <TextBlock Text="{Binding TotalUpdateCount}" FontSize="11" FontWeight="Bold"
+                           Foreground="{DynamicResource WarningBrush}" />
+              </Border>
+            </Grid>
+          </RadioButton>
+
+          <RadioButton Classes="nav" GroupName="nav"
+                       IsChecked="{Binding IsSettingsPage, Mode=TwoWay}">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+              <Viewbox Width="18" Height="18">
+                <Path Classes="icon" Data="{DynamicResource IconSettings}" />
+              </Viewbox>
+              <TextBlock Text="Configurações" VerticalAlignment="Center" />
+            </StackPanel>
+          </RadioButton>
+        </StackPanel>
+
+      </DockPanel>
+    </Border>
+
+    <!-- ╔══════════════════════ ÁREA PRINCIPAL ══════════════════════╗ -->
+    <Grid Grid.Column="1" RowDefinitions="*,Auto">
+
+      <Panel Grid.Row="0">
+
+        <!-- ────────────── PÁGINA: BIBLIOTECA ────────────── -->
+        <ScrollViewer IsVisible="{Binding IsLibraryPage}">
+          <StackPanel Margin="36,30,36,24" Spacing="24">
+
+            <!-- Título + busca -->
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Spacing="4">
+                <TextBlock Classes="h1" Text="Biblioteca" />
+                <TextBlock Classes="secondary" Text="{Binding LibrarySubtitle}" />
+              </StackPanel>
+              <TextBox Grid.Column="1" Classes="field" Width="270" VerticalAlignment="Center"
+                       Watermark="Buscar app…" Text="{Binding SearchText}">
+                <TextBox.InnerLeftContent>
+                  <Viewbox Width="16" Height="16" Margin="12,0,0,0">
+                    <Path Classes="icon" Data="{DynamicResource IconSearch}" Stroke="{DynamicResource TextMutedBrush}" />
+                  </Viewbox>
+                </TextBox.InnerLeftContent>
+              </TextBox>
+            </Grid>
+
+            <!-- Nova versão do launcher -->
+            <views:LauncherUpdateBanner IsVisible="{Binding ShowLauncherBanner}" />
+
+            <!-- Banner de boas-vindas com resumo -->
+            <Border Background="{DynamicResource HeroGradient}" CornerRadius="18" Padding="26,22"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Spacing="6" VerticalAlignment="Center" Margin="0,0,24,0">
+                  <TextBlock Text="Seus utilitários, num só lugar" FontSize="21" FontWeight="SemiBold" />
+                  <TextBlock Text="Instale, abra e mantenha tudo atualizado sem precisar caçar executáveis por aí."
+                             TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                  <Border Classes="stat">
+                    <StackPanel>
+                      <TextBlock Text="{Binding InstalledCount}" FontSize="24" FontWeight="Bold" />
+                      <TextBlock Text="instalados" Classes="secondary" FontSize="12" />
+                    </StackPanel>
+                  </Border>
+                  <Border Classes="stat">
+                    <StackPanel>
+                      <TextBlock Text="{Binding TotalUpdateCount}" FontSize="24" FontWeight="Bold"
+                                 Foreground="{DynamicResource WarningBrush}" />
+                      <TextBlock Text="atualizações" Classes="secondary" FontSize="12" />
+                    </StackPanel>
+                  </Border>
+                  <Border Classes="stat">
+                    <StackPanel>
+                      <TextBlock Text="{Binding AvailableCount}" FontSize="24" FontWeight="Bold"
+                                 Foreground="{DynamicResource PrimaryLightBrush}" />
+                      <TextBlock Text="disponíveis" Classes="secondary" FontSize="12" />
+                    </StackPanel>
+                  </Border>
+                </StackPanel>
+              </Grid>
+            </Border>
+
+            <!-- Filtros -->
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <RadioButton Classes="chip" GroupName="filter" Content="Todos"
+                           IsChecked="{Binding IsFilterAll, Mode=TwoWay}" />
+              <RadioButton Classes="chip" GroupName="filter" Content="Instalados"
+                           IsChecked="{Binding IsFilterInstalled, Mode=TwoWay}" />
+              <RadioButton Classes="chip" GroupName="filter" Content="Disponíveis"
+                           IsChecked="{Binding IsFilterAvailable, Mode=TwoWay}" />
+            </StackPanel>
+
+            <!-- Grade de apps -->
+            <ItemsControl ItemsSource="{Binding VisibleApps}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:AppCardViewModel">
+                  <Border Classes="card" Classes.soon="{Binding IsComingSoon}"
+                          Width="296" Margin="0,0,18,18">
+                    <StackPanel Spacing="16">
+
+                      <!-- Ícone + selo de status -->
+                      <Grid ColumnDefinitions="Auto,*,Auto">
+                        <Border Width="50" Height="50" CornerRadius="14" Background="{Binding AccentSoftBrush}">
+                          <Viewbox Width="26" Height="26">
+                            <Path Classes="icon" Data="{Binding IconGeometry}" Stroke="{Binding AccentBrush}" />
+                          </Viewbox>
+                        </Border>
+                        <Border Grid.Column="2" Classes="badge" VerticalAlignment="Top"
+                                Background="{Binding StatusSoftBrush}">
+                          <TextBlock Text="{Binding StatusText}" FontSize="11" FontWeight="SemiBold"
+                                     Foreground="{Binding StatusBrush}" />
+                        </Border>
+                      </Grid>
+
+                      <!-- Nome e descrição -->
+                      <StackPanel Spacing="6">
+                        <TextBlock Text="{Binding Name}" FontSize="17" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding Description}" Classes="secondary"
+                                   TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis"
+                                   Height="36" />
+                      </StackPanel>
+
+                      <!-- Versão / progresso -->
+                      <Panel Height="16">
+                        <TextBlock Text="{Binding VersionText}" Classes="muted" VerticalAlignment="Center"
+                                   IsVisible="{Binding !IsBusy}" />
+                        <ProgressBar Classes="slim" VerticalAlignment="Center"
+                                     Minimum="0" Maximum="100" Value="{Binding Progress}"
+                                     IsIndeterminate="{Binding IsProgressIndeterminate}"
+                                     IsVisible="{Binding IsBusy}" />
+                      </Panel>
+
+                      <!-- Ações: principal + pasta + desinstalar -->
+                      <Panel>
+                        <Grid ColumnDefinitions="*,Auto,Auto" IsVisible="{Binding !IsConfirmingUninstall}">
+                          <Button HorizontalAlignment="Stretch"
+                                  Classes.primary="{Binding IsOpenAction}"
+                                  Classes.warn="{Binding IsUpdateAction}"
+                                  Classes.soft="{Binding IsInstallAction}"
+                                  Classes.running="{Binding IsRunningAction}"
+                                  Command="{Binding PrimaryActionCommand}"
+                                  ToolTip.Tip="{Binding RunningTip}">
+                            <Panel>
+                              <!-- Normal: texto da ação ("Abrir", "Rodando"...) -->
+                              <StackPanel Classes="label-normal" Orientation="Horizontal" Spacing="7"
+                                          HorizontalAlignment="Center">
+                                <Ellipse Classes="run-dot" Width="7" Height="7" VerticalAlignment="Center"
+                                         IsVisible="{Binding IsRunningAction}" />
+                                <TextBlock Text="{Binding ActionText}" />
+                              </StackPanel>
+                              <!-- Com o mouse por cima de um app rodando -->
+                              <StackPanel Classes="label-hover" Orientation="Horizontal" Spacing="7"
+                                          HorizontalAlignment="Center">
+                                <Viewbox Width="12" Height="12" VerticalAlignment="Center">
+                                  <Path Classes="icon" Data="M6,6 L18,18 M18,6 L6,18" Stroke="White" StrokeThickness="3" />
+                                </Viewbox>
+                                <TextBlock Text="Encerrar" />
+                              </StackPanel>
+                            </Panel>
+                          </Button>
+                          <Button Grid.Column="1" Classes="ghost" Margin="8,0,0,0" Padding="10,9"
+                                  IsVisible="{Binding IsInstalled}"
+                                  Command="{Binding OpenFolderCommand}"
+                                  ToolTip.Tip="Abrir a pasta do app">
+                            <Viewbox Width="16" Height="16">
+                              <Path Classes="icon" Data="{DynamicResource IconFolder}"
+                                    Stroke="{DynamicResource TextSecondaryBrush}" />
+                            </Viewbox>
+                          </Button>
+                          <Button Grid.Column="2" Classes="ghost" Margin="6,0,0,0" Padding="10,9"
+                                  IsVisible="{Binding IsInstalled}"
+                                  Command="{Binding AskUninstallCommand}"
+                                  ToolTip.Tip="Desinstalar">
+                            <Viewbox Width="16" Height="16">
+                              <Path Classes="icon" Data="{DynamicResource IconTrash}"
+                                    Stroke="{DynamicResource TextSecondaryBrush}" />
+                            </Viewbox>
+                          </Button>
+                        </Grid>
+
+                        <!-- Confirmação de desinstalação -->
+                        <StackPanel Spacing="8" IsVisible="{Binding IsConfirmingUninstall}">
+                          <TextBlock Text="{Binding Name, StringFormat='Remover o {0} deste computador?'}"
+                                     FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap"
+                                     Foreground="{DynamicResource DangerBrush}" />
+                          <Grid ColumnDefinitions="*,*">
+                            <Button Classes="ghost" Content="Cancelar" HorizontalAlignment="Stretch"
+                                    Command="{Binding CancelUninstallCommand}" />
+                            <Button Grid.Column="1" Classes="danger" Content="Desinstalar" Margin="8,0,0,0"
+                                    HorizontalAlignment="Stretch"
+                                    Command="{Binding ConfirmUninstallCommand}" />
+                          </Grid>
+                        </StackPanel>
+                      </Panel>
+                    </StackPanel>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Estado vazio -->
+            <Border IsVisible="{Binding IsLibraryEmpty}"
+                    Background="{DynamicResource SurfaceBrush}" CornerRadius="16" Padding="24">
+              <StackPanel Spacing="4" HorizontalAlignment="Center">
+                <TextBlock Classes="h2" Text="Nada por aqui" HorizontalAlignment="Center" />
+                <TextBlock Classes="secondary" HorizontalAlignment="Center"
+                           Text="Nenhum app combina com esse filtro ou busca." />
+              </StackPanel>
+            </Border>
+
+          </StackPanel>
+        </ScrollViewer>
+
+        <!-- ────────────── PÁGINA: ATUALIZAÇÕES ────────────── -->
+        <ScrollViewer IsVisible="{Binding IsUpdatesPage}">
+          <StackPanel Margin="36,30,36,24" Spacing="24">
+
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Spacing="4">
+                <TextBlock Classes="h1" Text="Atualizações" />
+                <TextBlock Classes="secondary" Text="{Binding UpdatesSubtitle}" />
+              </StackPanel>
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <Button Classes="ghost" Command="{Binding CheckUpdatesCommand}">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Viewbox Width="15" Height="15">
+                      <Path Classes="icon" Data="{DynamicResource IconRefresh}"
+                            Stroke="{DynamicResource TextSecondaryBrush}" />
+                    </Viewbox>
+                    <TextBlock Text="Verificar agora" />
+                  </StackPanel>
+                </Button>
+                <Button Classes="primary" Content="Atualizar tudo"
+                        IsVisible="{Binding HasUpdates}"
+                        Command="{Binding UpdateAllCommand}" />
+              </StackPanel>
+            </Grid>
+
+            <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsChecking}" Classes="slim" />
+
+            <views:LauncherUpdateBanner IsVisible="{Binding ShowLauncherBanner}" />
+
+            <!-- Lista de apps com atualização -->
+            <ItemsControl ItemsSource="{Binding UpdatableApps}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Spacing="12" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:AppCardViewModel">
+                  <Border Classes="card" Padding="18,16">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                      <Border Width="44" Height="44" CornerRadius="12" Background="{Binding AccentSoftBrush}">
+                        <Viewbox Width="22" Height="22">
+                          <Path Classes="icon" Data="{Binding IconGeometry}" Stroke="{Binding AccentBrush}" />
+                        </Viewbox>
+                      </Border>
+                      <StackPanel Grid.Column="1" Margin="16,0" Spacing="4" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding VersionText}" Classes="muted" IsVisible="{Binding !IsBusy}" />
+                        <ProgressBar Classes="slim" Minimum="0" Maximum="100" Value="{Binding Progress}"
+                                     IsIndeterminate="{Binding IsProgressIndeterminate}"
+                                     IsVisible="{Binding IsBusy}" Width="320" HorizontalAlignment="Left" />
+                      </StackPanel>
+                      <Button Grid.Column="2" Classes="warn" VerticalAlignment="Center" MinWidth="110"
+                              Content="{Binding ActionText}"
+                              Command="{Binding PrimaryActionCommand}" />
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Estado "tudo em dia" -->
+            <Border IsVisible="{Binding HasNoUpdates}"
+                    Background="{DynamicResource SurfaceBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                    CornerRadius="18" Padding="32">
+              <StackPanel Spacing="10" HorizontalAlignment="Center">
+                <Border Width="56" Height="56" CornerRadius="28" HorizontalAlignment="Center"
+                        Background="{DynamicResource PrimarySoftBrush}">
+                  <Viewbox Width="26" Height="26">
+                    <Path Classes="icon" Data="M5,12.5 L10,17.5 L19,7.5" Stroke="{DynamicResource PrimaryLightBrush}" />
+                  </Viewbox>
+                </Border>
+                <TextBlock Classes="h2" Text="Tudo em dia!" HorizontalAlignment="Center" />
+                <TextBlock Classes="secondary" HorizontalAlignment="Center"
+                           Text="Nenhuma atualização pendente. Pode voltar mais tarde." />
+              </StackPanel>
+            </Border>
+
+          </StackPanel>
+        </ScrollViewer>
+
+        <!-- ────────────── PÁGINA: CONFIGURAÇÕES ────────────── -->
+        <ScrollViewer IsVisible="{Binding IsSettingsPage}">
+          <StackPanel Margin="36,30,36,24" Spacing="20" MaxWidth="820" HorizontalAlignment="Left">
+
+            <StackPanel Spacing="4">
+              <TextBlock Classes="h1" Text="Configurações" />
+              <TextBlock Classes="secondary" Text="Ajuste onde e como o NokyLabs cuida dos seus apps. Tudo é salvo automaticamente." />
+            </StackPanel>
+
+            <!-- Pasta de origem -->
+            <Border Classes="card">
+              <StackPanel Spacing="14">
+                <StackPanel Spacing="4">
+                  <TextBlock Classes="h2" Text="Pasta de origem" />
+                  <TextBlock Classes="secondary" TextWrapping="Wrap"
+                             Text="É aqui que os apps ficam instalados. Cada app ganha a sua própria subpasta, e o launcher reconhece na hora o que já estiver lá." />
+                </StackPanel>
+                <TextBox Classes="field" Text="{Binding SourceFolder}" />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <Button Classes="soft" Content="Escolher pasta…" Click="OnPickFolderClick" />
+                  <Button Classes="ghost" Content="Abrir no gerenciador" Command="{Binding OpenSourceFolderCommand}" />
+                  <Button Classes="ghost" Content="Voltar ao padrão" Command="{Binding ResetSourceFolderCommand}" />
+                </StackPanel>
+              </StackPanel>
+            </Border>
+
+            <!-- Catálogo -->
+            <Border Classes="card">
+              <StackPanel Spacing="14">
+                <StackPanel Spacing="4">
+                  <TextBlock Classes="h2" Text="Catálogo de apps" />
+                  <TextBlock Classes="secondary" TextWrapping="Wrap"
+                             Text="Link do catalogo.json com a lista de apps, versões e downloads. Deixe vazio para usar só o catálogo que vem dentro do launcher." />
+                </StackPanel>
+                <TextBox Classes="field" Text="{Binding CatalogUrl}"
+                         Watermark="https://thayttg.github.io/nokylabs/catalogo.json" />
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <Ellipse Width="8" Height="8" Fill="{DynamicResource PrimaryLightBrush}" VerticalAlignment="Center" />
+                    <TextBlock Classes="muted" VerticalAlignment="Center"
+                               Text="{Binding CatalogSourceText, StringFormat='Catálogo em uso: {0}'}" />
+                  </StackPanel>
+                  <Button Grid.Column="1" Classes="soft" Content="Buscar agora"
+                          Command="{Binding CheckUpdatesCommand}" />
+                </Grid>
+              </StackPanel>
+            </Border>
+
+            <!-- Comportamento -->
+            <Border Classes="card">
+              <StackPanel Spacing="14">
+                <TextBlock Classes="h2" Text="Comportamento" />
+                <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsStartupSupported}">
+                  <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="Iniciar com o sistema" FontWeight="Medium" />
+                    <TextBlock Classes="muted" TextWrapping="Wrap"
+                               Text="Abre o NokyLabs quando você entra no computador, já minimizado." />
+                    <TextBlock Classes="muted" TextWrapping="Wrap" Opacity="0.8"
+                               Text="{Binding StartupHint}" />
+                  </StackPanel>
+                  <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                IsChecked="{Binding StartWithSystem, Mode=TwoWay}" />
+                </Grid>
+                <Border Height="1" Background="{DynamicResource BorderBrush}" />
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="Minimizar para a bandeja ao fechar" FontWeight="Medium" />
+                    <TextBlock Classes="muted" TextWrapping="Wrap"
+                               Text="Fechar a janela deixa o launcher no ícone da bandeja (no Linux, fechar minimiza e fechar de novo encerra). Para sair de vez, use “Sair” no ícone." />
+                  </StackPanel>
+                  <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                IsChecked="{Binding MinimizeToTray, Mode=TwoWay}" />
+                </Grid>
+                <Border Height="1" Background="{DynamicResource BorderBrush}" />
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="Avisar sobre novidades" FontWeight="Medium" />
+                    <TextBlock Classes="muted" TextWrapping="Wrap"
+                               Text="Mostra um aviso no canto da tela quando aparecer algo novo e o launcher não estiver em foco." />
+                  </StackPanel>
+                  <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                IsChecked="{Binding ShowNotifications, Mode=TwoWay}" />
+                </Grid>
+              </StackPanel>
+            </Border>
+
+            <!-- Atualizações -->
+            <Border Classes="card">
+              <StackPanel Spacing="14">
+                <TextBlock Classes="h2" Text="Atualizações" />
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="Verificar atualizações ao abrir" FontWeight="Medium" />
+                    <TextBlock Classes="muted" TextWrapping="Wrap"
+                               Text="Procura versões novas sempre que o launcher iniciar." />
+                  </StackPanel>
+                  <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                IsChecked="{Binding CheckUpdatesOnStartup, Mode=TwoWay}" />
+                </Grid>
+                <Border Height="1" Background="{DynamicResource BorderBrush}" />
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="Verificar de tempos em tempos" FontWeight="Medium" />
+                    <TextBlock Classes="muted" TextWrapping="Wrap"
+                               Text="Enquanto estiver aberto, o launcher procura sozinho por atualizações dos apps e dele mesmo." />
+                  </StackPanel>
+                  <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                IsChecked="{Binding PeriodicCheck, Mode=TwoWay}" />
+                </Grid>
+                <Border Height="1" Background="{DynamicResource BorderBrush}" />
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="Atualizar apps automaticamente" FontWeight="Medium" />
+                    <TextBlock Classes="muted" TextWrapping="Wrap"
+                               Text="Instala as versões novas assim que forem encontradas. Apps abertos no momento ficam para a próxima." />
+                  </StackPanel>
+                  <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                IsChecked="{Binding AutoUpdateApps, Mode=TwoWay}" />
+                </Grid>
+                <Border Height="1" Background="{DynamicResource BorderBrush}" />
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="Atualizar o launcher automaticamente" FontWeight="Medium" />
+                    <TextBlock Classes="muted" TextWrapping="Wrap"
+                               Text="Baixa a versão nova sozinho; ela passa a valer na próxima vez que o launcher abrir." />
+                  </StackPanel>
+                  <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                IsChecked="{Binding AutoUpdateLauncher, Mode=TwoWay}" />
+                </Grid>
+              </StackPanel>
+            </Border>
+
+            <!-- Instalação de apps -->
+            <Border Classes="card">
+              <StackPanel Spacing="14">
+                <TextBlock Classes="h2" Text="Instalação de apps" />
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="Perguntar antes de instalar" FontWeight="Medium" />
+                    <TextBlock Classes="muted" TextWrapping="Wrap"
+                               Text="Mostra a janela de opções (atalhos, abrir depois...) ao instalar cada app." />
+                  </StackPanel>
+                  <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                IsChecked="{Binding AskBeforeInstall, Mode=TwoWay}" />
+                </Grid>
+                <Border Classes="divider" />
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="Criar atalho na Área de Trabalho" FontWeight="Medium" />
+                    <TextBlock Classes="muted" TextWrapping="Wrap"
+                               Text="Escolha padrão para os próximos apps." />
+                  </StackPanel>
+                  <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                IsChecked="{Binding AppDesktopShortcut, Mode=TwoWay}" />
+                </Grid>
+                <Border Classes="divider" />
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="{Binding AppMenuShortcutText}" FontWeight="Medium" />
+                    <TextBlock Classes="muted" TextWrapping="Wrap"
+                               Text="Escolha padrão para os próximos apps." />
+                  </StackPanel>
+                  <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                IsChecked="{Binding AppMenuShortcut, Mode=TwoWay}" />
+                </Grid>
+                <Border Classes="divider" />
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="Abrir depois de instalar" FontWeight="Medium" />
+                    <TextBlock Classes="muted" TextWrapping="Wrap"
+                               Text="Inicia o app assim que a instalação terminar." />
+                  </StackPanel>
+                  <ToggleSwitch Grid.Column="1" OnContent="" OffContent="" VerticalAlignment="Center"
+                                IsChecked="{Binding OpenAfterInstall, Mode=TwoWay}" />
+                </Grid>
+              </StackPanel>
+            </Border>
+
+            <!-- O próprio NokyLabs -->
+            <Border Classes="card">
+              <StackPanel Spacing="14">
+                <StackPanel Spacing="4">
+                  <TextBlock Classes="h2" Text="NokyLabs neste computador" />
+                  <TextBlock Classes="muted" TextWrapping="Wrap" Text="{Binding InstallModeText}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <Button Classes="soft" Content="Abrir assistente de instalação" Command="{Binding OpenSetupCommand}" />
+                  <Button Classes="danger" Content="Desinstalar o NokyLabs…" Command="{Binding UninstallLauncherCommand}"
+                          IsVisible="{Binding CanUninstallLauncher}" />
+                </StackPanel>
+              </StackPanel>
+            </Border>
+
+            <!-- Sobre -->
+            <Border Classes="card">
+              <Grid ColumnDefinitions="Auto,*,Auto">
+                <Border Width="48" Height="48" CornerRadius="14" Background="{DynamicResource BrandGradient}">
+                  <Viewbox Width="28" Height="28">
+                    <Path Classes="icon" Data="{DynamicResource IconLogo}" Stroke="White" StrokeThickness="2.9" />
+                  </Viewbox>
+                </Border>
+                <StackPanel Grid.Column="1" Margin="16,0,0,0" Spacing="2" VerticalAlignment="Center">
+                  <TextBlock Text="{Binding AppVersion, StringFormat='NokyLabs Launcher {0}'}" FontWeight="SemiBold" />
+                  <TextBlock Classes="muted" Text="{Binding SystemDescription, StringFormat='Rodando em: {0}'}" />
+                  <TextBlock Classes="muted" Text="{Binding LauncherModeText}" />
+                  <TextBlock Classes="muted" Text="{Binding ConfigFolder, StringFormat='Configurações em: {0}'}"
+                             TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+                <Button Grid.Column="2" Classes="ghost" Content="Abrir pasta" VerticalAlignment="Center"
+                        Margin="12,0,0,0" Command="{Binding OpenConfigFolderCommand}" />
+              </Grid>
+            </Border>
+
+          </StackPanel>
+        </ScrollViewer>
+
+      </Panel>
+
+      <!-- ╔══════════════════════ BARRA DE STATUS ══════════════════════╗ -->
+      <Border Grid.Row="1"
+              Background="{DynamicResource SidebarBrush}"
+              BorderBrush="{DynamicResource BorderBrush}"
+              BorderThickness="0,1,0,0"
+              Padding="20,9">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+          <Viewbox Width="15" Height="15" VerticalAlignment="Center">
+            <Path Classes="icon" Data="{DynamicResource IconFolder}" Stroke="{DynamicResource TextMutedBrush}" />
+          </Viewbox>
+          <TextBlock Grid.Column="1" Classes="muted" Margin="8,0,16,0" VerticalAlignment="Center"
+                     Text="{Binding SourceFolder}" TextTrimming="CharacterEllipsis" />
+          <TextBlock Grid.Column="2" Classes="secondary" FontSize="12" VerticalAlignment="Center"
+                     Text="{Binding StatusMessage}" />
+        </Grid>
+      </Border>
+
+    </Grid>
+  </Grid>
+</Window>
