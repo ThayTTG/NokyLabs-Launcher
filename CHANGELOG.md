@@ -5,6 +5,8 @@ Tudo o que muda no NokyLabs Launcher, versão por versão. O texto de cada vers�
 **Como usar:** anote as mudanças em `## [Não lançado]` enquanto trabalha. Na hora de lançar, é só aumentar o `<Version>` no `.csproj` e enviar para o branch `release`: o lançamento usa essa seção e ela vira a seção da versão sozinha.
 
 ## [Não lançado]
+
+## [0.7.1] - 2026-10-15
 - Apps de uso restrito, como o Avaliador Acadêmico, agora mostram **Solicitar acesso** em vez de Instalar.
 
 ## [0.7.0] - 2026-10-15
