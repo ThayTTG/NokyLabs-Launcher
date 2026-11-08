@@ -105,6 +105,42 @@
     <Setter Property="Foreground" Value="White" />
   </Style>
 
+  <!-- ===================== Seletor segmentado (situação: Todos / Instalados / Disponíveis) ===================== -->
+  <Style Selector="Border.segmented">
+    <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="999" />
+    <Setter Property="Padding" Value="3" />
+  </Style>
+  <Style Selector="RadioButton.seg">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+    <Setter Property="FontSize" Value="12.5" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Template">
+      <ControlTemplate TargetType="RadioButton">
+        <Border Background="{TemplateBinding Background}" CornerRadius="999" Padding="12,5">
+          <ContentPresenter Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" />
+        </Border>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+  <Style Selector="RadioButton.seg:pointerover">
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+  </Style>
+  <Style Selector="RadioButton.seg:checked">
+    <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+  </Style>
+
+  <!-- ===================== Faixas da Biblioteca (rolam para a direita) ===================== -->
+  <!-- A barra de rolagem fica fininha e só cresce com o mouse por cima (as setas fazem o trabalho principal) -->
+  <Style Selector="Button.shelf-prev:disabled, Button.shelf-next:disabled">
+    <Setter Property="Opacity" Value="0.35" />
+  </Style>
+
   <!-- ===================== Cards ===================== -->
   <Style Selector="Border.card">
     <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />

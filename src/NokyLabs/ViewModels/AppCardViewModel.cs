@@ -56,6 +56,7 @@ public partial class AppCardViewModel : ObservableObject
     public CatalogDownload? Download { get; }
 
     public string Id => App.Id;
+    public string Category => AppCategories.Guess(App);
     public string Name => App.Name;
     public string Description => App.Description;
     public string LatestVersion => App.Version;

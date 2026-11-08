@@ -109,6 +109,9 @@ public partial class MainWindowViewModel : ObservableObject
     // ---------- Listas mostradas na tela ----------
 
     public ObservableCollection<AppCardViewModel> VisibleApps { get; } = new();
+
+    /// <summary>Os apps visíveis, em faixas por categoria (Apps, Educação, Jogos).</summary>
+    public ObservableCollection<AppShelfViewModel> Shelves { get; } = new();
     public ObservableCollection<AppCardViewModel> UpdatableApps { get; } = new();
 
     // ---------- Navegação ----------
@@ -126,6 +129,23 @@ public partial class MainWindowViewModel : ObservableObject
 
     // Atualiza a cada mudança (ligar E desligar), porque os RadioButtons
     // trocam de estado um de cada vez e só o estado final importa.
+    // ---------- Categorias (as mesmas do site) ----------
+
+    [ObservableProperty] private bool _isCategoryAll = true;
+    [ObservableProperty] private bool _isCategoryApps;
+    [ObservableProperty] private bool _isCategoryEducacao;
+    [ObservableProperty] private bool _isCategoryJogos;
+
+    partial void OnIsCategoryAllChanged(bool value) => RefreshLists();
+    partial void OnIsCategoryAppsChanged(bool value) => RefreshLists();
+    partial void OnIsCategoryEducacaoChanged(bool value) => RefreshLists();
+    partial void OnIsCategoryJogosChanged(bool value) => RefreshLists();
+
+    private string? SelectedCategory =>
+        IsCategoryApps ? AppCategories.Apps :
+        IsCategoryEducacao ? AppCategories.Educacao :
+        IsCategoryJogos ? AppCategories.Jogos : null;
+
     partial void OnIsFilterAllChanged(bool value) => RefreshLists();
     partial void OnIsFilterInstalledChanged(bool value) => RefreshLists();
     partial void OnIsFilterAvailableChanged(bool value) => RefreshLists();
@@ -604,6 +624,42 @@ public partial class MainWindowViewModel : ObservableObject
         _ => $"{UpdateCount} apps têm versões novas esperando por você."
     };
 
+    /// <summary>
+    /// Separa os apps visíveis em faixas por categoria. Só refaz uma faixa quando os apps dela mudam,
+    /// para a rolagem para a direita não voltar ao começo à toa.
+    /// </summary>
+    private void RefreshShelves(IReadOnlyList<AppCardViewModel> visible)
+    {
+        var groups = AppCategories.Order
+            .Select(c => (Category: c, Apps: visible.Where(a => a.Category == c).ToList()))
+            .Where(g => g.Apps.Count > 0)
+            .ToList();
+
+        var sameShape = groups.Count == Shelves.Count &&
+                        groups.Select(g => g.Category).SequenceEqual(Shelves.Select(s => s.Category));
+        if (!sameShape)
+        {
+            Shelves.Clear();
+            foreach (var g in groups)
+            {
+                var shelf = new AppShelfViewModel(g.Category);
+                foreach (var app in g.Apps) shelf.Apps.Add(app);
+                Shelves.Add(shelf);
+            }
+            return;
+        }
+
+        for (var i = 0; i < groups.Count; i++)
+        {
+            var shelf = Shelves[i];
+            if (groups[i].Apps.SequenceEqual(shelf.Apps)) continue;
+            // a contagem ("3 apps") é calculada; uma faixa nova avisa a tela de tudo de uma vez
+            var fresh = new AppShelfViewModel(shelf.Category);
+            foreach (var app in groups[i].Apps) fresh.Apps.Add(app);
+            Shelves[i] = fresh;
+        }
+    }
+
     /// <summary>Reconstrói as listas visíveis conforme filtro e busca.</summary>
     private void RefreshLists()
     {
@@ -616,6 +672,9 @@ public partial class MainWindowViewModel : ObservableObject
         else if (IsFilterAvailable)
             filtered = filtered.Where(a => !a.IsInstalled);
 
+        if (SelectedCategory is { } category)
+            filtered = filtered.Where(a => a.Category == category);
+
         if (query.Length > 0)
             filtered = filtered.Where(a =>
                 a.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
@@ -627,6 +686,7 @@ public partial class MainWindowViewModel : ObservableObject
             VisibleApps.Clear();
             foreach (var app in visible) VisibleApps.Add(app);
         }
+        RefreshShelves(visible);
 
         var updatable = RealApps.Where(a => a.HasUpdate || (a.IsBusy && UpdatableApps.Contains(a))).ToList();
         if (!updatable.SequenceEqual(UpdatableApps))

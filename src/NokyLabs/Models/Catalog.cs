@@ -53,6 +53,12 @@ public sealed class CatalogApp
     public bool ComingSoon { get; set; }
 
     /// <summary>
+    /// Categoria, a mesma do site: "apps", "educacao" ou "jogos".
+    /// Se faltar, o launcher usa <see cref="AppCategories.Guess"/>.
+    /// </summary>
+    public string Category { get; set; } = string.Empty;
+
+    /// <summary>
     /// Opcional: link de um app que roda no navegador (ex.: um jogo no itch.io).
     /// Quando preenchido, o card mostra "Jogar"/"Abrir no navegador" em vez de instalar.
     /// </summary>

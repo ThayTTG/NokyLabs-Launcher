@@ -19,6 +19,126 @@
     <vm:MainWindowViewModel />
   </Design.DataContext>
 
+  <Window.Resources>
+    <!-- O card de um app: usado nas faixas da Biblioteca -->
+      <DataTemplate x:Key="AppCardTemplate" x:DataType="vm:AppCardViewModel">
+        <Border Classes="card" Classes.soon="{Binding IsComingSoon}"
+                Width="260" Margin="0,0,16,0">
+          <StackPanel Spacing="16">
+
+            <!-- Ícone + selo de status -->
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <Border Width="50" Height="50" CornerRadius="14" Background="{Binding AccentSoftBrush}">
+                <Viewbox Width="26" Height="26">
+                  <Path Classes="icon" Data="{Binding IconGeometry}" Stroke="{Binding AccentBrush}" />
+                </Viewbox>
+              </Border>
+              <Border Grid.Column="2" Classes="badge" VerticalAlignment="Top"
+                      Background="{Binding StatusSoftBrush}">
+                <TextBlock Text="{Binding StatusText}" FontSize="11" FontWeight="SemiBold"
+                           Foreground="{Binding StatusBrush}" />
+              </Border>
+            </Grid>
+
+            <!-- Nome e descrição -->
+            <StackPanel Spacing="6">
+              <TextBlock Text="{Binding Name}" FontSize="17" FontWeight="SemiBold" />
+              <TextBlock Text="{Binding Description}" Classes="secondary"
+                         TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis"
+                         Height="36" />
+            </StackPanel>
+
+            <!-- Versão / progresso -->
+            <Panel Height="16">
+              <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding !IsBusy}">
+                <TextBlock Text="{Binding VersionText}" Classes="muted" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" />
+                <Button Grid.Column="1" Classes="link" Content="Novidades" Margin="8,0,0,0"
+                        VerticalAlignment="Center" IsVisible="{Binding HasNotes}"
+                        ToolTip.Tip="O que mudou na versão mais recente">
+                  <Button.Flyout>
+                    <Flyout Placement="BottomEdgeAlignedRight">
+                      <StackPanel Spacing="8" MaxWidth="320">
+                        <TextBlock Text="{Binding NotesTitle}" FontSize="13" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding NotesText}" Classes="secondary" TextWrapping="Wrap" />
+                      </StackPanel>
+                    </Flyout>
+                  </Button.Flyout>
+                </Button>
+              </Grid>
+              <ProgressBar Classes="slim" VerticalAlignment="Center"
+                           Minimum="0" Maximum="100" Value="{Binding Progress}"
+                           IsIndeterminate="{Binding IsProgressIndeterminate}"
+                           IsVisible="{Binding IsBusy}" />
+            </Panel>
+
+            <!-- Ações: principal + pasta + desinstalar -->
+            <Panel>
+              <Grid ColumnDefinitions="*,Auto,Auto" IsVisible="{Binding !IsConfirmingUninstall}">
+                <Button HorizontalAlignment="Stretch"
+                        Classes.primary="{Binding IsOpenAction}"
+                        Classes.warn="{Binding IsUpdateAction}"
+                        Classes.soft="{Binding IsInstallAction}"
+                        Classes.running="{Binding IsRunningAction}"
+                        Command="{Binding PrimaryActionCommand}"
+                        ToolTip.Tip="{Binding RunningTip}">
+                  <Panel>
+                    <!-- Normal: texto da ação ("Abrir", "Rodando"...) -->
+                    <StackPanel Classes="label-normal" Orientation="Horizontal" Spacing="7"
+                                HorizontalAlignment="Center">
+                      <Ellipse Classes="run-dot" Width="7" Height="7" VerticalAlignment="Center"
+                               IsVisible="{Binding IsRunningAction}" />
+                      <TextBlock Text="{Binding ActionText}" />
+                    </StackPanel>
+                    <!-- Com o mouse por cima de um app rodando -->
+                    <StackPanel Classes="label-hover" Orientation="Horizontal" Spacing="7"
+                                HorizontalAlignment="Center">
+                      <Viewbox Width="12" Height="12" VerticalAlignment="Center">
+                        <Path Classes="icon" Data="M6,6 L18,18 M18,6 L6,18" Stroke="White" StrokeThickness="3" />
+                      </Viewbox>
+                      <TextBlock Text="Encerrar" />
+                    </StackPanel>
+                  </Panel>
+                </Button>
+                <Button Grid.Column="1" Classes="ghost" Margin="8,0,0,0" Padding="10,9"
+                        IsVisible="{Binding IsInstalled}"
+                        Command="{Binding OpenFolderCommand}"
+                        ToolTip.Tip="Abrir a pasta do app">
+                  <Viewbox Width="16" Height="16">
+                    <Path Classes="icon" Data="{DynamicResource IconFolder}"
+                          Stroke="{DynamicResource TextSecondaryBrush}" />
+                  </Viewbox>
+                </Button>
+                <Button Grid.Column="2" Classes="ghost" Margin="6,0,0,0" Padding="10,9"
+                        IsVisible="{Binding IsInstalled}"
+                        Command="{Binding AskUninstallCommand}"
+                        ToolTip.Tip="Desinstalar">
+                  <Viewbox Width="16" Height="16">
+                    <Path Classes="icon" Data="{DynamicResource IconTrash}"
+                          Stroke="{DynamicResource TextSecondaryBrush}" />
+                  </Viewbox>
+                </Button>
+              </Grid>
+
+              <!-- Confirmação de desinstalação -->
+              <StackPanel Spacing="8" IsVisible="{Binding IsConfirmingUninstall}">
+                <TextBlock Text="{Binding Name, StringFormat='Remover o {0} deste computador?'}"
+                           FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap"
+                           Foreground="{DynamicResource DangerBrush}" />
+                <Grid ColumnDefinitions="*,*">
+                  <Button Classes="ghost" Content="Cancelar" HorizontalAlignment="Stretch"
+                          Command="{Binding CancelUninstallCommand}" />
+                  <Button Grid.Column="1" Classes="danger" Content="Desinstalar" Margin="8,0,0,0"
+                          HorizontalAlignment="Stretch"
+                          Command="{Binding ConfirmUninstallCommand}" />
+                </Grid>
+              </StackPanel>
+            </Panel>
+          </StackPanel>
+        </Border>
+      </DataTemplate>
+  </Window.Resources>
+
   <Grid ColumnDefinitions="248,*">
 
     <!-- ╔══════════════════════ BARRA LATERAL ══════════════════════╗ -->
@@ -167,139 +287,83 @@
               </Grid>
             </Border>
 
-            <!-- Filtros -->
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <RadioButton Classes="chip" GroupName="filter" Content="Todos"
-                           IsChecked="{Binding IsFilterAll, Mode=TwoWay}" />
-              <RadioButton Classes="chip" GroupName="filter" Content="Instalados"
-                           IsChecked="{Binding IsFilterInstalled, Mode=TwoWay}" />
-              <RadioButton Classes="chip" GroupName="filter" Content="Disponíveis"
-                           IsChecked="{Binding IsFilterAvailable, Mode=TwoWay}" />
-            </StackPanel>
+            <!-- Categorias (as mesmas do site) e filtro de situação -->
+            <WrapPanel>
+              <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,24,8">
+                <RadioButton Classes="chip" GroupName="categoria" Content="Todas"
+                             IsChecked="{Binding IsCategoryAll, Mode=TwoWay}" />
+                <RadioButton Classes="chip" GroupName="categoria" Content="Apps"
+                             IsChecked="{Binding IsCategoryApps, Mode=TwoWay}" />
+                <RadioButton Classes="chip" GroupName="categoria" Content="Educação"
+                             IsChecked="{Binding IsCategoryEducacao, Mode=TwoWay}" />
+                <RadioButton Classes="chip" GroupName="categoria" Content="Jogos"
+                             IsChecked="{Binding IsCategoryJogos, Mode=TwoWay}" />
+              </StackPanel>
+              <Border Classes="segmented" Margin="0,0,0,8">
+                <StackPanel Orientation="Horizontal" Spacing="2">
+                  <RadioButton Classes="seg" GroupName="filter" Content="Todos"
+                               IsChecked="{Binding IsFilterAll, Mode=TwoWay}" />
+                  <RadioButton Classes="seg" GroupName="filter" Content="Instalados"
+                               IsChecked="{Binding IsFilterInstalled, Mode=TwoWay}" />
+                  <RadioButton Classes="seg" GroupName="filter" Content="Disponíveis"
+                               IsChecked="{Binding IsFilterAvailable, Mode=TwoWay}" />
+                </StackPanel>
+              </Border>
+            </WrapPanel>
 
-            <!-- Grade de apps -->
-            <ItemsControl ItemsSource="{Binding VisibleApps}">
+            <!-- Uma faixa por categoria; os cards rolam para a direita -->
+            <ItemsControl ItemsSource="{Binding Shelves}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                  <WrapPanel />
+                  <StackPanel Spacing="26" />
                 </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="vm:AppCardViewModel">
-                  <Border Classes="card" Classes.soon="{Binding IsComingSoon}"
-                          Width="296" Margin="0,0,18,18">
-                    <StackPanel Spacing="16">
-
-                      <!-- Ícone + selo de status -->
-                      <Grid ColumnDefinitions="Auto,*,Auto">
-                        <Border Width="50" Height="50" CornerRadius="14" Background="{Binding AccentSoftBrush}">
-                          <Viewbox Width="26" Height="26">
-                            <Path Classes="icon" Data="{Binding IconGeometry}" Stroke="{Binding AccentBrush}" />
-                          </Viewbox>
-                        </Border>
-                        <Border Grid.Column="2" Classes="badge" VerticalAlignment="Top"
-                                Background="{Binding StatusSoftBrush}">
-                          <TextBlock Text="{Binding StatusText}" FontSize="11" FontWeight="SemiBold"
-                                     Foreground="{Binding StatusBrush}" />
-                        </Border>
-                      </Grid>
-
-                      <!-- Nome e descrição -->
-                      <StackPanel Spacing="6">
-                        <TextBlock Text="{Binding Name}" FontSize="17" FontWeight="SemiBold" />
-                        <TextBlock Text="{Binding Description}" Classes="secondary"
-                                   TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis"
-                                   Height="36" />
-                      </StackPanel>
-
-                      <!-- Versão / progresso -->
-                      <Panel Height="16">
-                        <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding !IsBusy}">
-                          <TextBlock Text="{Binding VersionText}" Classes="muted" VerticalAlignment="Center"
-                                     TextTrimming="CharacterEllipsis" />
-                          <Button Grid.Column="1" Classes="link" Content="Novidades" Margin="8,0,0,0"
-                                  VerticalAlignment="Center" IsVisible="{Binding HasNotes}"
-                                  ToolTip.Tip="O que mudou na versão mais recente">
-                            <Button.Flyout>
-                              <Flyout Placement="BottomEdgeAlignedRight">
-                                <StackPanel Spacing="8" MaxWidth="320">
-                                  <TextBlock Text="{Binding NotesTitle}" FontSize="13" FontWeight="SemiBold" />
-                                  <TextBlock Text="{Binding NotesText}" Classes="secondary" TextWrapping="Wrap" />
-                                </StackPanel>
-                              </Flyout>
-                            </Button.Flyout>
-                          </Button>
-                        </Grid>
-                        <ProgressBar Classes="slim" VerticalAlignment="Center"
-                                     Minimum="0" Maximum="100" Value="{Binding Progress}"
-                                     IsIndeterminate="{Binding IsProgressIndeterminate}"
-                                     IsVisible="{Binding IsBusy}" />
-                      </Panel>
-
-                      <!-- Ações: principal + pasta + desinstalar -->
-                      <Panel>
-                        <Grid ColumnDefinitions="*,Auto,Auto" IsVisible="{Binding !IsConfirmingUninstall}">
-                          <Button HorizontalAlignment="Stretch"
-                                  Classes.primary="{Binding IsOpenAction}"
-                                  Classes.warn="{Binding IsUpdateAction}"
-                                  Classes.soft="{Binding IsInstallAction}"
-                                  Classes.running="{Binding IsRunningAction}"
-                                  Command="{Binding PrimaryActionCommand}"
-                                  ToolTip.Tip="{Binding RunningTip}">
-                            <Panel>
-                              <!-- Normal: texto da ação ("Abrir", "Rodando"...) -->
-                              <StackPanel Classes="label-normal" Orientation="Horizontal" Spacing="7"
-                                          HorizontalAlignment="Center">
-                                <Ellipse Classes="run-dot" Width="7" Height="7" VerticalAlignment="Center"
-                                         IsVisible="{Binding IsRunningAction}" />
-                                <TextBlock Text="{Binding ActionText}" />
-                              </StackPanel>
-                              <!-- Com o mouse por cima de um app rodando -->
-                              <StackPanel Classes="label-hover" Orientation="Horizontal" Spacing="7"
-                                          HorizontalAlignment="Center">
-                                <Viewbox Width="12" Height="12" VerticalAlignment="Center">
-                                  <Path Classes="icon" Data="M6,6 L18,18 M18,6 L6,18" Stroke="White" StrokeThickness="3" />
-                                </Viewbox>
-                                <TextBlock Text="Encerrar" />
-                              </StackPanel>
-                            </Panel>
-                          </Button>
-                          <Button Grid.Column="1" Classes="ghost" Margin="8,0,0,0" Padding="10,9"
-                                  IsVisible="{Binding IsInstalled}"
-                                  Command="{Binding OpenFolderCommand}"
-                                  ToolTip.Tip="Abrir a pasta do app">
-                            <Viewbox Width="16" Height="16">
-                              <Path Classes="icon" Data="{DynamicResource IconFolder}"
-                                    Stroke="{DynamicResource TextSecondaryBrush}" />
-                            </Viewbox>
-                          </Button>
-                          <Button Grid.Column="2" Classes="ghost" Margin="6,0,0,0" Padding="10,9"
-                                  IsVisible="{Binding IsInstalled}"
-                                  Command="{Binding AskUninstallCommand}"
-                                  ToolTip.Tip="Desinstalar">
-                            <Viewbox Width="16" Height="16">
-                              <Path Classes="icon" Data="{DynamicResource IconTrash}"
-                                    Stroke="{DynamicResource TextSecondaryBrush}" />
-                            </Viewbox>
-                          </Button>
-                        </Grid>
-
-                        <!-- Confirmação de desinstalação -->
-                        <StackPanel Spacing="8" IsVisible="{Binding IsConfirmingUninstall}">
-                          <TextBlock Text="{Binding Name, StringFormat='Remover o {0} deste computador?'}"
-                                     FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap"
-                                     Foreground="{DynamicResource DangerBrush}" />
-                          <Grid ColumnDefinitions="*,*">
-                            <Button Classes="ghost" Content="Cancelar" HorizontalAlignment="Stretch"
-                                    Command="{Binding CancelUninstallCommand}" />
-                            <Button Grid.Column="1" Classes="danger" Content="Desinstalar" Margin="8,0,0,0"
-                                    HorizontalAlignment="Stretch"
-                                    Command="{Binding ConfirmUninstallCommand}" />
-                          </Grid>
+                <DataTemplate x:DataType="vm:AppShelfViewModel">
+                  <StackPanel Classes="shelf-root" Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Spacing="2">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                          <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="SemiBold" />
+                          <Border Classes="badge" VerticalAlignment="Center"
+                                  Background="{DynamicResource SurfaceRaisedBrush}">
+                            <TextBlock Text="{Binding CountText}" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                          </Border>
                         </StackPanel>
-                      </Panel>
-                    </StackPanel>
-                  </Border>
+                        <TextBlock Text="{Binding Subtitle}" Classes="muted" />
+                      </StackPanel>
+                      <StackPanel Grid.Column="1" Classes="shelf-arrows" Orientation="Horizontal"
+                                  Spacing="6" VerticalAlignment="Bottom">
+                        <Button Classes="ghost shelf-prev" Padding="9" Click="OnShelfPrevClick"
+                                ToolTip.Tip="Voltar">
+                          <Viewbox Width="14" Height="14">
+                            <Path Classes="icon" Data="M15,5 L8,12 L15,19"
+                                  Stroke="{DynamicResource TextSecondaryBrush}" />
+                          </Viewbox>
+                        </Button>
+                        <Button Classes="ghost shelf-next" Padding="9" Click="OnShelfNextClick"
+                                ToolTip.Tip="Ver mais">
+                          <Viewbox Width="14" Height="14">
+                            <Path Classes="icon" Data="M9,5 L16,12 L9,19"
+                                  Stroke="{DynamicResource TextSecondaryBrush}" />
+                          </Viewbox>
+                        </Button>
+                      </StackPanel>
+                    </Grid>
+                    <ScrollViewer Classes="shelf" HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Disabled"
+                                  ScrollChanged="OnShelfScrollChanged">
+                      <ItemsControl ItemsSource="{Binding Apps}" Padding="0,0,0,14"
+                                    ItemTemplate="{StaticResource AppCardTemplate}">
+                        <ItemsControl.ItemsPanel>
+                          <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                          </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                      </ItemsControl>
+                    </ScrollViewer>
+                  </StackPanel>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
