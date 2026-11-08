@@ -21,6 +21,32 @@ public partial class MainWindow : Window
             if (DataContext is MainWindowViewModel vm)
                 vm.ShowInstallDialog = ShowInstallDialogAsync;
         };
+
+        // Esc fecha o painel de detalhes
+        KeyDown += (_, e) =>
+        {
+            if (e.Key == Avalonia.Input.Key.Escape && DataContext is MainWindowViewModel { IsDetailsOpen: true } vm)
+            {
+                vm.CloseDetailsCommand.Execute(null);
+                e.Handled = true;
+            }
+        };
+    }
+
+    // ------------------------------------------------------------------ painel de detalhes
+
+    /// <summary>Clicar no card abre os detalhes; clicar nos botões do card continua fazendo só o que o botão faz.</summary>
+    private void OnCardTapped(object? sender, Avalonia.Input.TappedEventArgs e)
+    {
+        if (sender is not Control card || card.DataContext is not AppCardViewModel app) return;
+        if (e.Source is Visual v && v.GetSelfAndVisualAncestors().TakeWhile(x => x != card).Any(x => x is Button))
+            return;
+        if (DataContext is MainWindowViewModel vm) vm.OpenDetailsCommand.Execute(app);
+    }
+
+    private void OnDetailsBackdropPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm) vm.CloseDetailsCommand.Execute(null);
     }
 
     private async Task<AppInstallChoices?> ShowInstallDialogAsync(AppInstallRequest request)

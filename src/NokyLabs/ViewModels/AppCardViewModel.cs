@@ -56,6 +56,40 @@ public partial class AppCardViewModel : ObservableObject
     public CatalogDownload? Download { get; }
 
     public string Id => App.Id;
+
+    // ---------- Painel de detalhes ----------
+
+    private const string SiteBase = "https://thayttg.github.io/nokylabs/";
+
+    /// <summary>Endereço da página do app no site (null para os cards sem página, como o "Próximo utilitário").</summary>
+    public string? SiteUrl => Id == "proximo" ? null : SiteBase + "#" + Id;
+    public bool HasSiteUrl => SiteUrl is not null;
+
+    public string CategoryTitle => AppCategories.Title(Category);
+    public string SystemName => PlatformInfo.DisplayName;
+
+    /// <summary>A frase sobre este computador: "Instalação disponível", "Instalado (v1.1.0)"…</summary>
+    public string SystemStatusText => Status switch
+    {
+        AppStatus.ComingSoon => "Ainda em desenvolvimento: aparece aqui quando tiver versão de teste.",
+        AppStatus.Web => "Roda direto no navegador, sem instalar.",
+        AppStatus.Restricted => "Uso restrito: o acesso é liberado por pedido.",
+        AppStatus.UpdateAvailable => $"Instalado (v{InstalledVersion}). Atualização disponível: v{LatestVersion}.",
+        AppStatus.Installed => $"Instalado (v{InstalledVersion}), em dia.",
+        AppStatus.Unsupported => $"Ainda sem versão para {PlatformInfo.DisplayName}.",
+        _ => IsDownloadPending ? "A versão para este sistema ainda está sendo publicada."
+                               : "Instalação disponível pelo launcher."
+    };
+
+    public string InstalledVersionText => InstalledVersion is { } v ? $"v{v}" : "Não instalado";
+    public string LatestVersionText => IsComingSoon ? "—" : $"v{LatestVersion}";
+    public bool ShowsPlatforms => !IsWeb && !IsComingSoon;
+
+    /// <summary>
+    /// Os sistemas do catálogo: o atual primeiro (instala pelo launcher) e os outros só com download.
+    /// </summary>
+    public IReadOnlyList<PlatformRowViewModel> Platforms =>
+        PlatformRows.Build(App, PlatformInfo.Key, IsInstalled, _report);
     public string Category => AppCategories.Guess(App);
     public string Name => App.Name;
     public string Description => App.Description;
@@ -206,6 +240,7 @@ public partial class AppCardViewModel : ObservableObject
                      nameof(IsRunningAction),
                      nameof(IsInstalled), nameof(HasUpdate), nameof(StatusText), nameof(StatusBrush),
                      nameof(StatusSoftBrush), nameof(VersionText), nameof(ActionText),
+                     nameof(SystemStatusText), nameof(InstalledVersionText), nameof(Platforms),
                      nameof(IsOpenAction), nameof(IsUpdateAction), nameof(IsInstallAction),
                      nameof(HasNotes), nameof(NotesTitle)
                  })

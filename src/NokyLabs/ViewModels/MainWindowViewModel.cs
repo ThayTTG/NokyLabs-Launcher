@@ -129,6 +129,28 @@ public partial class MainWindowViewModel : ObservableObject
 
     // Atualiza a cada mudança (ligar E desligar), porque os RadioButtons
     // trocam de estado um de cada vez e só o estado final importa.
+    // ---------- Painel de detalhes (abre ao clicar num card) ----------
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsDetailsOpen))]
+    private AppCardViewModel? _selectedApp;
+
+    public bool IsDetailsOpen => SelectedApp is not null;
+
+    [RelayCommand]
+    private void OpenDetails(AppCardViewModel? app) => SelectedApp = app;
+
+    [RelayCommand]
+    private void CloseDetails() => SelectedApp = null;
+
+    [RelayCommand]
+    private void OpenSitePage()
+    {
+        if (SelectedApp?.SiteUrl is not { } url) return;
+        try { LaunchService.OpenUrl(url); }
+        catch (LauncherException ex) { StatusMessage = ex.Message; }
+    }
+
     // ---------- Categorias (as mesmas do site) ----------
 
     [ObservableProperty] private bool _isCategoryAll = true;

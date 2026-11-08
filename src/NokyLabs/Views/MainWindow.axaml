@@ -22,8 +22,9 @@
   <Window.Resources>
     <!-- O card de um app: usado nas faixas da Biblioteca -->
       <DataTemplate x:Key="AppCardTemplate" x:DataType="vm:AppCardViewModel">
-        <Border Classes="card" Classes.soon="{Binding IsComingSoon}"
-                Width="260" Margin="0,0,16,0">
+        <Border Classes="card clickable" Classes.soon="{Binding IsComingSoon}"
+                Width="260" Margin="0,0,16,0" Tapped="OnCardTapped"
+                ToolTip.Tip="Clique para ver os detalhes">
           <StackPanel Spacing="16">
 
             <!-- Ícone + selo de status -->
@@ -682,6 +683,144 @@
           </StackPanel>
         </ScrollViewer>
 
+
+        <!-- ────────────── PAINEL DE DETALHES (abre ao clicar num card) ────────────── -->
+        <Panel Classes="details-layer" Classes.open="{Binding IsDetailsOpen}"
+               IsHitTestVisible="{Binding IsDetailsOpen}">
+          <!-- fundo escurecido: clicar fora fecha -->
+          <Border Background="#99060410" PointerPressed="OnDetailsBackdropPressed" />
+
+          <Border Classes="drawer" Width="430" HorizontalAlignment="Right"
+                  Background="{DynamicResource SidebarBrush}"
+                  BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1,0,0,0">
+            <ScrollViewer DataContext="{Binding SelectedApp}" x:DataType="vm:AppCardViewModel">
+              <StackPanel Margin="28,26,28,28" Spacing="22">
+
+                <!-- Cabeçalho -->
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                  <Border Width="58" Height="58" CornerRadius="16" Background="{Binding AccentSoftBrush}">
+                    <Viewbox Width="30" Height="30">
+                      <Path Classes="icon" Data="{Binding IconGeometry}" Stroke="{Binding AccentBrush}" />
+                    </Viewbox>
+                  </Border>
+                  <StackPanel Grid.Column="1" Margin="16,0,0,0" Spacing="6" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Name}" FontSize="22" FontWeight="Bold" TextWrapping="Wrap" />
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <Border Classes="badge" Background="{Binding StatusSoftBrush}">
+                        <TextBlock Text="{Binding StatusText}" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{Binding StatusBrush}" />
+                      </Border>
+                      <Border Classes="badge" Background="{DynamicResource SurfaceRaisedBrush}">
+                        <TextBlock Text="{Binding CategoryTitle}" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                      </Border>
+                    </StackPanel>
+                  </StackPanel>
+                  <Button Grid.Column="2" Classes="ghost" Padding="9" VerticalAlignment="Top"
+                          Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).CloseDetailsCommand}"
+                          ToolTip.Tip="Fechar (Esc)">
+                    <Viewbox Width="14" Height="14">
+                      <Path Classes="icon" Data="M6,6 L18,18 M18,6 L6,18" Stroke="{DynamicResource TextSecondaryBrush}" />
+                    </Viewbox>
+                  </Button>
+                </Grid>
+
+                <TextBlock Text="{Binding Description}" TextWrapping="Wrap" LineHeight="21"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+
+                <!-- Este computador -->
+                <Border Classes="card" Padding="18">
+                  <StackPanel Spacing="14">
+                    <StackPanel Spacing="4">
+                      <TextBlock Classes="muted" FontSize="11" FontWeight="SemiBold" Text="ESTE COMPUTADOR" />
+                      <TextBlock FontSize="15" FontWeight="SemiBold" Text="{Binding SystemName, StringFormat='Sistema: {0}'}" />
+                      <TextBlock Classes="secondary" TextWrapping="Wrap" Text="{Binding SystemStatusText}" />
+                    </StackPanel>
+                    <ProgressBar Classes="slim" Minimum="0" Maximum="100" Value="{Binding Progress}"
+                                 IsIndeterminate="{Binding IsProgressIndeterminate}" IsVisible="{Binding IsBusy}" />
+                    <Grid ColumnDefinitions="*,Auto">
+                      <Button HorizontalAlignment="Stretch"
+                              Classes.primary="{Binding IsOpenAction}"
+                              Classes.warn="{Binding IsUpdateAction}"
+                              Classes.soft="{Binding IsInstallAction}"
+                              Classes.running="{Binding IsRunningAction}"
+                              Command="{Binding PrimaryActionCommand}"
+                              ToolTip.Tip="{Binding RunningTip}">
+                        <StackPanel Orientation="Horizontal" Spacing="7" HorizontalAlignment="Center">
+                          <Ellipse Classes="run-dot" Width="7" Height="7" VerticalAlignment="Center"
+                                   IsVisible="{Binding IsRunningAction}" />
+                          <TextBlock Text="{Binding ActionText}" />
+                        </StackPanel>
+                      </Button>
+                      <Button Grid.Column="1" Classes="ghost" Margin="8,0,0,0" Padding="10,9"
+                              IsVisible="{Binding IsInstalled}" Command="{Binding OpenFolderCommand}"
+                              ToolTip.Tip="Abrir a pasta do app">
+                        <Viewbox Width="16" Height="16">
+                          <Path Classes="icon" Data="{DynamicResource IconFolder}" Stroke="{DynamicResource TextSecondaryBrush}" />
+                        </Viewbox>
+                      </Button>
+                    </Grid>
+                  </StackPanel>
+                </Border>
+
+                <!-- Plataformas: o sistema atual instala; os outros, só download -->
+                <StackPanel Spacing="10" IsVisible="{Binding ShowsPlatforms}">
+                  <TextBlock Classes="muted" FontSize="11" FontWeight="SemiBold" Text="PLATAFORMAS" />
+                  <ItemsControl ItemsSource="{Binding Platforms}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate><StackPanel Spacing="8" /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="vm:PlatformRowViewModel">
+                        <Border Classes="platform-row" Classes.current="{Binding IsCurrent}">
+                          <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2" VerticalAlignment="Center">
+                              <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
+                              <TextBlock Text="{Binding StatusText}" Classes="secondary" FontSize="12.5" />
+                            </StackPanel>
+                            <Button Grid.Column="1" Classes="ghost" Padding="12,7" VerticalAlignment="Center"
+                                    IsVisible="{Binding CanDownload}" Command="{Binding DownloadCommand}"
+                                    ToolTip.Tip="Abre o download no navegador (sem instalar)">
+                              <StackPanel Orientation="Horizontal" Spacing="7">
+                                <Viewbox Width="13" Height="13" VerticalAlignment="Center">
+                                  <Path Classes="icon" Data="M12,4 V15 M7.5,10.5 L12,15 L16.5,10.5 M5,19 H19"
+                                        Stroke="{DynamicResource TextSecondaryBrush}" />
+                                </Viewbox>
+                                <TextBlock Text="{Binding DownloadText}" FontSize="12.5" />
+                              </StackPanel>
+                            </Button>
+                          </Grid>
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+
+                <!-- Versões -->
+                <Grid ColumnDefinitions="*,*" IsVisible="{Binding ShowsPlatforms}">
+                  <StackPanel Spacing="2">
+                    <TextBlock Classes="muted" FontSize="11" FontWeight="SemiBold" Text="INSTALADA" />
+                    <TextBlock Text="{Binding InstalledVersionText}" FontWeight="SemiBold" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="1" Spacing="2">
+                    <TextBlock Classes="muted" FontSize="11" FontWeight="SemiBold" Text="MAIS RECENTE" />
+                    <TextBlock Text="{Binding LatestVersionText}" FontWeight="SemiBold" />
+                  </StackPanel>
+                </Grid>
+
+                <!-- Novidades -->
+                <StackPanel Spacing="8" IsVisible="{Binding HasNotes}">
+                  <TextBlock Classes="muted" FontSize="11" FontWeight="SemiBold" Text="{Binding NotesTitle}" />
+                  <TextBlock Text="{Binding NotesText}" Classes="secondary" TextWrapping="Wrap" LineHeight="20" />
+                </StackPanel>
+
+                <Button Classes="link" HorizontalAlignment="Left" IsVisible="{Binding HasSiteUrl}"
+                        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).OpenSitePageCommand}"
+                        Content="Ver tudo sobre o app no site da NokyLabs" />
+              </StackPanel>
+            </ScrollViewer>
+          </Border>
+        </Panel>
       </Panel>
 
       <!-- ╔══════════════════════ BARRA DE STATUS ══════════════════════╗ -->
