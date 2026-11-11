@@ -37,7 +37,7 @@
     <Border Background="{DynamicResource SidebarBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0">
       <DockPanel Margin="24,26,20,20">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="0,0,0,34">
-          <Border Width="40" Height="40" CornerRadius="12" Background="{DynamicResource BrandGradient}">
+          <Border Width="40" Height="40" CornerRadius="12" Background="{DynamicResource AccentBrush}">
             <Viewbox Width="24" Height="24">
               <Path Classes="icon" Data="{DynamicResource IconLogo}" Stroke="White" StrokeThickness="2.9" />
             </Viewbox>
@@ -57,13 +57,13 @@
               <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,14">
                 <Panel Width="30" Height="30">
                   <Ellipse Fill="{DynamicResource SurfaceRaisedBrush}" />
-                  <Ellipse Fill="{DynamicResource PrimarySoftHoverBrush}" IsVisible="{Binding IsDone}" />
-                  <Ellipse Fill="{DynamicResource PrimaryBrush}" IsVisible="{Binding IsCurrent}" />
+                  <Ellipse Fill="{DynamicResource AccentSoftHoverBrush}" IsVisible="{Binding IsDone}" />
+                  <Ellipse Fill="{DynamicResource AccentBrush}" IsVisible="{Binding IsCurrent}" />
                   <TextBlock Text="{Binding Number}" FontSize="12" FontWeight="Bold"
                              HorizontalAlignment="Center" VerticalAlignment="Center"
                              IsVisible="{Binding !IsDone}" />
                   <Viewbox Width="14" Height="14" IsVisible="{Binding IsDone}">
-                    <Path Classes="icon" Data="{DynamicResource IconCheck}" Stroke="{DynamicResource PrimaryLightBrush}" StrokeThickness="3" />
+                    <Path Classes="icon" Data="{DynamicResource IconCheck}" Stroke="{DynamicResource AccentTextBrush}" StrokeThickness="3" />
                   </Viewbox>
                 </Panel>
                 <TextBlock Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center"
@@ -101,9 +101,9 @@
 
             <RadioButton Classes="choice" GroupName="mode" IsChecked="{Binding IsInstallMode, Mode=TwoWay}">
               <Grid ColumnDefinitions="Auto,*">
-                <Border Width="44" Height="44" CornerRadius="12" Background="{DynamicResource PrimarySoftBrush}" VerticalAlignment="Top">
+                <Border Width="44" Height="44" CornerRadius="12" Background="{DynamicResource AccentSoftBrush}" VerticalAlignment="Top">
                   <Viewbox Width="22" Height="22">
-                    <Path Classes="icon" Data="{DynamicResource IconInstall}" Stroke="{DynamicResource PrimaryLightBrush}" />
+                    <Path Classes="icon" Data="{DynamicResource IconInstall}" Stroke="{DynamicResource AccentTextBrush}" />
                   </Viewbox>
                 </Border>
                 <StackPanel Grid.Column="1" Margin="14,0,0,0" Spacing="3">
@@ -116,9 +116,9 @@
 
             <RadioButton Classes="choice" GroupName="mode" IsChecked="{Binding IsPortableMode, Mode=TwoWay}">
               <Grid ColumnDefinitions="Auto,*">
-                <Border Width="44" Height="44" CornerRadius="12" Background="{DynamicResource PrimarySoftBrush}" VerticalAlignment="Top">
+                <Border Width="44" Height="44" CornerRadius="12" Background="{DynamicResource AccentSoftBrush}" VerticalAlignment="Top">
                   <Viewbox Width="22" Height="22">
-                    <Path Classes="icon" Data="{DynamicResource IconPortable}" Stroke="{DynamicResource PrimaryLightBrush}" />
+                    <Path Classes="icon" Data="{DynamicResource IconPortable}" Stroke="{DynamicResource AccentTextBrush}" />
                   </Viewbox>
                 </Border>
                 <StackPanel Grid.Column="1" Margin="14,0,0,0" Spacing="3">
@@ -396,7 +396,7 @@
                   <DataTemplate x:DataType="sys:String">
                     <Grid ColumnDefinitions="Auto,*" Margin="0,4">
                       <Viewbox Width="15" Height="15" VerticalAlignment="Top" Margin="0,2,10,0">
-                        <Path Classes="icon" Data="{DynamicResource IconCheck}" Stroke="{DynamicResource PrimaryLightBrush}" StrokeThickness="2.6" />
+                        <Path Classes="icon" Data="{DynamicResource IconCheck}" Stroke="{DynamicResource AccentTextBrush}" StrokeThickness="2.6" />
                       </Viewbox>
                       <TextBlock Grid.Column="1" Text="{Binding}" TextWrapping="Wrap" />
                     </Grid>
@@ -431,7 +431,7 @@
 
           <!-- ───────── 7. Concluído ───────── -->
           <StackPanel Spacing="18" IsVisible="{Binding IsDoneStep}">
-            <Border Width="72" Height="72" CornerRadius="36" HorizontalAlignment="Left" Background="{DynamicResource BrandGradient}">
+            <Border Width="72" Height="72" CornerRadius="36" HorizontalAlignment="Left" Background="{DynamicResource AccentBrush}">
               <Viewbox Width="34" Height="34">
                 <Path Classes="icon" Data="{DynamicResource IconCheck}" Stroke="White" StrokeThickness="2.6" />
               </Viewbox>

@@ -13,13 +13,13 @@
         Foreground="{DynamicResource TextBrush}">
 
   <!-- Avisozinho no canto da tela. Clicar abre o launcher; some sozinho depois de alguns segundos. -->
-  <Border BorderBrush="{DynamicResource PrimaryBrush}" BorderThickness="1"
+  <Border BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1"
           Background="Transparent" Cursor="Hand"
           PointerPressed="OnBodyPressed">
     <Grid ColumnDefinitions="Auto,*,Auto" Margin="16,0,10,0">
 
       <Border Width="44" Height="44" CornerRadius="12" VerticalAlignment="Center"
-              Background="{DynamicResource BrandGradient}">
+              Background="{DynamicResource AccentBrush}">
         <Viewbox Width="24" Height="24">
           <Path Classes="icon" Data="{DynamicResource IconLogo}" Stroke="White" StrokeThickness="2.9" />
         </Viewbox>

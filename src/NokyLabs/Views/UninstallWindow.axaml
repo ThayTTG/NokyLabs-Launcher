@@ -22,7 +22,7 @@
 
     <!-- Cabeçalho -->
     <StackPanel Orientation="Horizontal" Spacing="14">
-      <Border Width="48" Height="48" CornerRadius="14" Background="{DynamicResource BrandGradient}">
+      <Border Width="48" Height="48" CornerRadius="14" Background="{DynamicResource AccentBrush}">
         <Viewbox Width="28" Height="28">
           <Path Classes="icon" Data="{DynamicResource IconLogo}" Stroke="White" StrokeThickness="2.9" />
         </Viewbox>

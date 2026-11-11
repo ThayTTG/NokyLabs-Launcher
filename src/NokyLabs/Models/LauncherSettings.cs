@@ -31,6 +31,9 @@ public sealed class LauncherSettings
 
     public bool MinimizeToTray { get; set; }
 
+    /// <summary>Tema: "escuro" (padrão), "claro" ou "sistema" (igual ao Windows/Linux).</summary>
+    public string Theme { get; set; } = "escuro";
+
     /// <summary>Mostra um aviso no canto da tela quando há novidades e o launcher não está em foco.</summary>
     public bool ShowNotifications { get; set; } = true;
 

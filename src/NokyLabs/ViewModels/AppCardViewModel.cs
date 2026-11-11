@@ -12,17 +12,6 @@ namespace NokyLabs.ViewModels;
 /// </summary>
 public partial class AppCardViewModel : ObservableObject
 {
-    private static readonly IBrush SuccessBrush = new ImmutableSolidColorBrush(Color.Parse("#34D399"));
-    private static readonly IBrush SuccessSoftBrush = new ImmutableSolidColorBrush(Color.Parse("#34D399"), 0.14);
-    private static readonly IBrush WarningBrush = new ImmutableSolidColorBrush(Color.Parse("#FBBF24"));
-    private static readonly IBrush WarningSoftBrush = new ImmutableSolidColorBrush(Color.Parse("#FBBF24"), 0.14);
-    private static readonly IBrush PrimaryLightBrush = new ImmutableSolidColorBrush(Color.Parse("#C4B5FD"));
-    private static readonly IBrush PrimarySoftBrush = new ImmutableSolidColorBrush(Color.Parse("#8B5CF6"), 0.16);
-    private static readonly IBrush MutedBrush = new ImmutableSolidColorBrush(Color.Parse("#A99FC7"));
-    private static readonly IBrush MutedSoftBrush = new ImmutableSolidColorBrush(Color.Parse("#A99FC7"), 0.12);
-    private static readonly IBrush InfoBrush = new ImmutableSolidColorBrush(Color.Parse("#7DD3FC"));
-    private static readonly IBrush InfoSoftBrush = new ImmutableSolidColorBrush(Color.Parse("#7DD3FC"), 0.14);
-
     private static readonly Geometry FallbackIcon = Geometry.Parse("M4,4 H20 V20 H4 Z");
 
     private readonly Func<string> _getSourceFolder;
@@ -42,9 +31,8 @@ public partial class AppCardViewModel : ObservableObject
 
         Download = app.Downloads.TryGetValue(PlatformInfo.Key, out var dl) ? dl : null;
 
-        var accent = TryParseColor(app.Accent) ?? Color.Parse("#A99FC7");
-        AccentBrush = new ImmutableSolidColorBrush(accent);
-        AccentSoftBrush = new ImmutableSolidColorBrush(accent, 0.16);
+        _accent = TryParseColor(app.Accent) ?? Color.Parse("#A99FC7");
+        AccentSoftBrush = new ImmutableSolidColorBrush(_accent, 0.16);
         IconGeometry = TryParseGeometry(app.Icon) ?? FallbackIcon;
 
         Rescan();
@@ -94,8 +82,14 @@ public partial class AppCardViewModel : ObservableObject
     public string Name => App.Name;
     public string Description => App.Description;
     public string LatestVersion => App.Version;
-    public IBrush AccentBrush { get; }
+    private readonly Color _accent;
+
+    /// <summary>Cor do app para o ícone, ajustada ao tema (escuro ou claro) para continuar legível.</summary>
+    public IBrush AccentBrush => IconHelper.ReadableBrush(_accent);
     public IBrush AccentSoftBrush { get; }
+
+    /// <summary>Chamado quando o tema muda: redesenha o ícone com a cor certa para o tema novo.</summary>
+    public void RefreshThemeColors() => OnPropertyChanged(nameof(AccentBrush));
     public Geometry IconGeometry { get; }
 
     /// <summary>Manifesto do que está instalado (null = não instalado).</summary>
@@ -120,7 +114,7 @@ public partial class AppCardViewModel : ObservableObject
 
     /// <summary>O app está aberto neste momento (verificado de tempos em tempos pelo launcher).</summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsRunningAction), nameof(IsOpenAction), nameof(IsUpdateAction), nameof(ActionText), nameof(StatusText), nameof(StatusBrush), nameof(StatusSoftBrush), nameof(RunningTip))]
+    [NotifyPropertyChangedFor(nameof(IsRunningAction), nameof(IsOpenAction), nameof(IsUpdateAction), nameof(ActionText), nameof(StatusText), nameof(StatusIsSuccess), nameof(StatusIsWarning), nameof(StatusIsAccent), nameof(StatusIsInfo), nameof(RunningTip))]
     [NotifyCanExecuteChangedFor(nameof(AskUninstallCommand))]
     private bool _isRunning;
 
@@ -170,23 +164,13 @@ public partial class AppCardViewModel : ObservableObject
         _ => "Em breve"
     };
 
-    public IBrush StatusBrush => IsRunning && IsInstalled ? SuccessBrush : Status switch
-    {
-        AppStatus.Web or AppStatus.Restricted => InfoBrush,
-        AppStatus.Installed => SuccessBrush,
-        AppStatus.UpdateAvailable => WarningBrush,
-        AppStatus.NotInstalled => PrimaryLightBrush,
-        _ => MutedBrush
-    };
-
-    public IBrush StatusSoftBrush => IsRunning && IsInstalled ? SuccessSoftBrush : Status switch
-    {
-        AppStatus.Web or AppStatus.Restricted => InfoSoftBrush,
-        AppStatus.Installed => SuccessSoftBrush,
-        AppStatus.UpdateAvailable => WarningSoftBrush,
-        AppStatus.NotInstalled => PrimarySoftBrush,
-        _ => MutedSoftBrush
-    };
+    // Cor do selo de situação. Viram classes do Kit no XAML (badge success/warning/accent/info),
+    // então acompanham o tema sozinhas.
+    private StatusTone Tone => StatusTones.For(Status, IsRunning && IsInstalled);
+    public bool StatusIsSuccess => Tone == StatusTone.Success;
+    public bool StatusIsWarning => Tone == StatusTone.Warning;
+    public bool StatusIsAccent => Tone == StatusTone.Accent;
+    public bool StatusIsInfo => Tone == StatusTone.Info;
 
     public string VersionText => Status switch
     {
@@ -238,8 +222,8 @@ public partial class AppCardViewModel : ObservableObject
                  {
                      nameof(InstalledVersion), nameof(Status), nameof(IsComingSoon), nameof(IsUnsupported), nameof(IsWeb), nameof(IsRestricted),
                      nameof(IsRunningAction),
-                     nameof(IsInstalled), nameof(HasUpdate), nameof(StatusText), nameof(StatusBrush),
-                     nameof(StatusSoftBrush), nameof(VersionText), nameof(ActionText),
+                     nameof(IsInstalled), nameof(HasUpdate), nameof(StatusText), nameof(StatusIsSuccess), nameof(StatusIsWarning),
+                     nameof(StatusIsAccent), nameof(StatusIsInfo), nameof(VersionText), nameof(ActionText),
                      nameof(SystemStatusText), nameof(InstalledVersionText), nameof(Platforms),
                      nameof(IsOpenAction), nameof(IsUpdateAction), nameof(IsInstallAction),
                      nameof(HasNotes), nameof(NotesTitle)

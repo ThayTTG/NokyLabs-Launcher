@@ -27,6 +27,10 @@ public partial class App : Application
         {
             _desktop = desktop;
 
+            // Tema escolhido em Configurações > Aparência, aplicado antes de abrir qualquer janela
+            ThemeService.Apply(SettingsService.Load().Theme);
+            ActualThemeVariantChanged += (_, _) => _viewModel?.RefreshThemeColors();
+
             // Quem decide quando o app termina somos nós (janela escondida na bandeja não conta como "fechada")
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 

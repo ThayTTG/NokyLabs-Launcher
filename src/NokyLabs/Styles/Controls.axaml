@@ -1,144 +1,24 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!-- ===================== Texto ===================== -->
-  <Style Selector="TextBlock.h1">
-    <Setter Property="FontSize" Value="28" />
-    <Setter Property="FontWeight" Value="Bold" />
-    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-  </Style>
-  <Style Selector="TextBlock.h2">
-    <Setter Property="FontSize" Value="16" />
-    <Setter Property="FontWeight" Value="SemiBold" />
-    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-  </Style>
-  <Style Selector="TextBlock.secondary">
-    <Setter Property="FontSize" Value="13" />
-    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
-  </Style>
-  <Style Selector="TextBlock.muted">
-    <Setter Property="FontSize" Value="12" />
-    <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
-  </Style>
+  <!-- Estilos só do launcher. Texto, botões, cartões, selos, filtros, menu lateral, campos,
+       barras e balões vêm do Kit NokyLabs (NokyLabs.UI), iguais aos dos outros apps. -->
 
-  <!-- ===================== Ícones de traço ===================== -->
-  <Style Selector="Path.icon">
-    <Setter Property="Width" Value="24" />
-    <Setter Property="Height" Value="24" />
-    <Setter Property="Stretch" Value="None" />
-    <Setter Property="StrokeThickness" Value="2" />
-    <Setter Property="StrokeLineCap" Value="Round" />
-    <Setter Property="StrokeJoin" Value="Round" />
-    <Setter Property="Stroke" Value="{DynamicResource TextSecondaryBrush}" />
-  </Style>
-
-  <!-- ===================== Navegação lateral ===================== -->
-  <Style Selector="RadioButton.nav">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
-    <Setter Property="HorizontalAlignment" Value="Stretch" />
-    <Setter Property="FontSize" Value="14" />
-    <Setter Property="FontWeight" Value="Medium" />
-    <Setter Property="Cursor" Value="Hand" />
-    <Setter Property="Template">
-      <ControlTemplate TargetType="RadioButton">
-        <Border Background="{TemplateBinding Background}"
-                CornerRadius="10"
-                Padding="12,10">
-          <ContentPresenter Content="{TemplateBinding Content}"
-                            ContentTemplate="{TemplateBinding ContentTemplate}"
-                            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            Foreground="{TemplateBinding Foreground}" />
-        </Border>
-      </ControlTemplate>
-    </Setter>
-    <Setter Property="Transitions">
-      <Transitions>
-        <BrushTransition Property="Background" Duration="0:0:0.15" />
-      </Transitions>
-    </Setter>
-  </Style>
-  <Style Selector="RadioButton.nav:pointerover">
-    <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-  </Style>
-  <Style Selector="RadioButton.nav:checked">
-    <Setter Property="Background" Value="{DynamicResource PrimarySoftBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-  </Style>
-  <Style Selector="RadioButton.nav Path.icon">
-    <Setter Property="Stroke" Value="{DynamicResource TextMutedBrush}" />
-  </Style>
-  <Style Selector="RadioButton.nav:checked Path.icon">
-    <Setter Property="Stroke" Value="{DynamicResource PrimaryLightBrush}" />
-  </Style>
-
-  <!-- ===================== Filtros em "pílula" ===================== -->
-  <Style Selector="RadioButton.chip">
-    <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-    <Setter Property="FontSize" Value="13" />
-    <Setter Property="FontWeight" Value="Medium" />
-    <Setter Property="Cursor" Value="Hand" />
-    <Setter Property="Template">
-      <ControlTemplate TargetType="RadioButton">
-        <Border Background="{TemplateBinding Background}"
-                BorderBrush="{TemplateBinding BorderBrush}"
-                BorderThickness="1"
-                CornerRadius="999"
-                Padding="16,7">
-          <ContentPresenter Content="{TemplateBinding Content}"
-                            Foreground="{TemplateBinding Foreground}" />
-        </Border>
-      </ControlTemplate>
-    </Setter>
-  </Style>
-  <Style Selector="RadioButton.chip:pointerover">
-    <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-  </Style>
-  <Style Selector="RadioButton.chip:checked">
-    <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
-    <Setter Property="Foreground" Value="White" />
-  </Style>
-
-  <!-- ===================== Seletor segmentado (situação: Todos / Instalados / Disponíveis) ===================== -->
-  <Style Selector="Border.segmented">
-    <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+  <!-- ===================== Banner da Biblioteca (o "hero" do Kit) ===================== -->
+  <Style Selector="Border.hero">
+    <Setter Property="Background" Value="{DynamicResource HeroBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource HeroBorderBrush}" />
     <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="999" />
-    <Setter Property="Padding" Value="3" />
+    <Setter Property="CornerRadius" Value="24" />
+    <Setter Property="Padding" Value="28,24" />
   </Style>
-  <Style Selector="RadioButton.seg">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
-    <Setter Property="FontSize" Value="12.5" />
-    <Setter Property="FontWeight" Value="Medium" />
-    <Setter Property="Cursor" Value="Hand" />
-    <Setter Property="Template">
-      <ControlTemplate TargetType="RadioButton">
-        <Border Background="{TemplateBinding Background}" CornerRadius="999" Padding="12,5">
-          <ContentPresenter Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" />
-        </Border>
-      </ControlTemplate>
-    </Setter>
-  </Style>
-  <Style Selector="RadioButton.seg:pointerover">
-    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-  </Style>
-  <Style Selector="RadioButton.seg:checked">
-    <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-  </Style>
+
+  <!-- ===================== Selos de situação dos apps ===================== -->
+  <!-- "No navegador" e "Acesso restrito" (o Kit já tem accent, success, warning e danger) -->
+  <Style Selector="Border.badge.info"><Setter Property="Background" Value="{DynamicResource InfoSoftBrush}" /></Style>
+  <Style Selector="Border.badge.info > TextBlock"><Setter Property="Foreground" Value="{DynamicResource InfoBrush}" /></Style>
 
   <!-- ===================== Painel de detalhes ===================== -->
-  <Style Selector="Border.card.clickable">
-    <Setter Property="Cursor" Value="Hand" />
-  </Style>
   <Style Selector="Panel.details-layer">
     <Setter Property="Opacity" Value="0" />
     <Setter Property="Transitions">
@@ -152,7 +32,8 @@
     <Setter Property="RenderTransform" Value="translateX(48px)" />
     <Setter Property="Transitions">
       <Transitions>
-        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.28" Easing="CubicEaseOut" />
+        <!-- A mesma curva de saída suave do Kit -->
+        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.32" Easing="0.2,0.7,0.2,1" />
       </Transitions>
     </Setter>
   </Style>
@@ -167,175 +48,16 @@
     <Setter Property="Padding" Value="14,10" />
   </Style>
   <Style Selector="Border.platform-row.current">
-    <Setter Property="BorderBrush" Value="{DynamicResource PrimarySoftHoverBrush}" />
-    <Setter Property="Background" Value="{DynamicResource PrimarySoftBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentSoftHoverBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
   </Style>
 
   <!-- ===================== Faixas da Biblioteca (rolam para a direita) ===================== -->
-  <!-- A barra de rolagem fica fininha e só cresce com o mouse por cima (as setas fazem o trabalho principal) -->
   <Style Selector="Button.shelf-prev:disabled, Button.shelf-next:disabled">
     <Setter Property="Opacity" Value="0.35" />
   </Style>
 
-  <!-- ===================== Cards ===================== -->
-  <Style Selector="Border.card">
-    <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-    <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="16" />
-    <Setter Property="Padding" Value="20" />
-    <Setter Property="Transitions">
-      <Transitions>
-        <BrushTransition Property="Background" Duration="0:0:0.15" />
-        <BrushTransition Property="BorderBrush" Duration="0:0:0.15" />
-      </Transitions>
-    </Setter>
-  </Style>
-  <Style Selector="Border.card:pointerover">
-    <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource PrimarySoftHoverBrush}" />
-  </Style>
-  <Style Selector="Border.card.soon">
-    <Setter Property="Opacity" Value="0.65" />
-  </Style>
-
-  <Style Selector="Border.badge">
-    <Setter Property="CornerRadius" Value="999" />
-    <Setter Property="Padding" Value="10,4" />
-  </Style>
-
-  <Style Selector="Border.stat">
-    <Setter Property="Background" Value="#1AFFFFFF" />
-    <Setter Property="CornerRadius" Value="12" />
-    <Setter Property="Padding" Value="16,10" />
-    <Setter Property="MinWidth" Value="104" />
-  </Style>
-
-  <!-- ===================== Botões ===================== -->
-  <!-- Base comum a todos os botões do launcher -->
-  <Style Selector="Button.primary, Button.soft, Button.warn, Button.ghost, Button.danger">
-    <Setter Property="CornerRadius" Value="10" />
-    <Setter Property="Padding" Value="16,9" />
-    <Setter Property="FontWeight" Value="SemiBold" />
-    <Setter Property="FontSize" Value="13" />
-    <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="HorizontalContentAlignment" Value="Center" />
-    <Setter Property="Cursor" Value="Hand" />
-  </Style>
-
-  <!-- primary: roxo sólido (Abrir, Atualizar tudo) -->
-  <Style Selector="Button.primary">
-    <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
-    <Setter Property="Foreground" Value="White" />
-  </Style>
-  <Style Selector="Button.primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource PrimaryHoverBrush}" />
-    <Setter Property="Foreground" Value="White" />
-  </Style>
-  <Style Selector="Button.primary:pressed /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource PrimaryPressedBrush}" />
-    <Setter Property="Foreground" Value="White" />
-  </Style>
-
-  <!-- soft: roxo translúcido (Instalar, ações secundárias) -->
-  <Style Selector="Button.soft">
-    <Setter Property="Background" Value="{DynamicResource PrimarySoftBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource PrimaryLightBrush}" />
-  </Style>
-  <Style Selector="Button.soft:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource PrimarySoftHoverBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-  </Style>
-  <Style Selector="Button.soft:pressed /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource PrimarySoftBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-  </Style>
-
-  <!-- warn: âmbar (Atualizar) -->
-  <Style Selector="Button.warn">
-    <Setter Property="Background" Value="{DynamicResource WarningSoftBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
-  </Style>
-  <Style Selector="Button.warn:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource WarningSoftHoverBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
-  </Style>
-  <Style Selector="Button.warn:pressed /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource WarningSoftBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
-  </Style>
-
-  <!-- ghost: só contorno -->
-  <Style Selector="Button.ghost">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-    <Setter Property="BorderThickness" Value="1" />
-  </Style>
-  <Style Selector="Button.ghost:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource PrimarySoftHoverBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-  </Style>
-
-  <!-- danger: vermelho (Desinstalar) -->
-  <Style Selector="Button.danger">
-    <Setter Property="Background" Value="{DynamicResource DangerSoftBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
-  </Style>
-  <Style Selector="Button.danger:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource DangerBrush}" />
-    <Setter Property="Foreground" Value="White" />
-  </Style>
-  <Style Selector="Button.danger:pressed /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource DangerSoftBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
-  </Style>
-
-  <!-- link: texto clicável pequeno ("Novidades") -->
-  <Style Selector="Button.link">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="Padding" Value="0" />
-    <Setter Property="MinHeight" Value="0" />
-    <Setter Property="FontSize" Value="12" />
-    <Setter Property="FontWeight" Value="SemiBold" />
-    <Setter Property="Foreground" Value="{DynamicResource PrimaryLightBrush}" />
-    <Setter Property="Cursor" Value="Hand" />
-  </Style>
-  <Style Selector="Button.link:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-  </Style>
-  <Style Selector="Button.link:pressed /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="Transparent" />
-  </Style>
-
-  <!-- Balões (flyouts), como o de "Novidades" -->
-  <Style Selector="FlyoutPresenter">
-    <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-    <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="12" />
-    <Setter Property="Padding" Value="16,14" />
-  </Style>
-
-  <!-- running: app aberto. Verde com "Rodando"; com o mouse por cima vira vermelho com "Encerrar" -->
-  <Style Selector="Button.running">
-    <Setter Property="Background" Value="{DynamicResource SuccessSoftBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
-    <Setter Property="CornerRadius" Value="10" />
-    <Setter Property="Padding" Value="16,9" />
-    <Setter Property="FontWeight" Value="SemiBold" />
-    <Setter Property="FontSize" Value="13" />
-    <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="HorizontalContentAlignment" Value="Center" />
-    <Setter Property="Cursor" Value="Hand" />
-  </Style>
-  <Style Selector="Button.running:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource DangerBrush}" />
-    <Setter Property="Foreground" Value="White" />
-  </Style>
+  <!-- ===================== Botão do app aberto ===================== -->
   <Style Selector="Button.running:pressed /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource DangerSoftBrush}" />
     <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
@@ -344,7 +66,7 @@
     <Setter Property="Fill" Value="{DynamicResource SuccessBrush}" />
   </Style>
 
-  <!-- Troca de rótulo no hover: só acontece em botões "running" -->
+  <!-- Troca de rótulo no hover: só acontece em botões "running" ("Rodando" vira "Encerrar") -->
   <Style Selector="Button StackPanel.label-hover">
     <Setter Property="IsVisible" Value="False" />
   </Style>
@@ -355,13 +77,7 @@
     <Setter Property="IsVisible" Value="False" />
   </Style>
 
-  <!-- Desabilitado (ex.: card "Em breve" ou durante uma instalação) -->
-  <Style Selector="Button.primary:disabled /template/ ContentPresenter#PART_ContentPresenter, Button.soft:disabled /template/ ContentPresenter#PART_ContentPresenter, Button.warn:disabled /template/ ContentPresenter#PART_ContentPresenter, Button.ghost:disabled /template/ ContentPresenter#PART_ContentPresenter, Button.danger:disabled /template/ ContentPresenter#PART_ContentPresenter, Button.running:disabled /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
-  </Style>
-
-  <!-- ===================== Cartões de escolha (assistente) ===================== -->
+  <!-- ===================== Cartões de escolha (assistente e Aparência) ===================== -->
   <Style Selector="RadioButton.choice">
     <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
@@ -373,7 +89,7 @@
       <ControlTemplate TargetType="RadioButton">
         <Border Background="{TemplateBinding Background}"
                 BorderBrush="{TemplateBinding BorderBrush}"
-                BorderThickness="1.5" CornerRadius="14" Padding="18,16">
+                BorderThickness="1.5" CornerRadius="16" Padding="18,16">
           <ContentPresenter Content="{TemplateBinding Content}"
                             ContentTemplate="{TemplateBinding ContentTemplate}"
                             HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -381,65 +97,39 @@
         </Border>
       </ControlTemplate>
     </Setter>
+    <Setter Property="RenderTransform" Value="none" />
     <Setter Property="Transitions">
       <Transitions>
         <BrushTransition Property="Background" Duration="0:0:0.15" />
         <BrushTransition Property="BorderBrush" Duration="0:0:0.15" />
+        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12" />
       </Transitions>
     </Setter>
   </Style>
   <Style Selector="RadioButton.choice:pointerover">
     <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
   </Style>
+  <Style Selector="RadioButton.choice:pressed">
+    <Setter Property="RenderTransform" Value="scale(0.98)" />
+  </Style>
   <Style Selector="RadioButton.choice:checked">
-    <Setter Property="Background" Value="{DynamicResource PrimarySoftBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
   </Style>
 
-  <!-- Linha de opção com interruptor (Configurações e assistente) -->
+  <!-- Linha divisória (Configurações e assistente) -->
   <Style Selector="Border.divider">
     <Setter Property="Height" Value="1" />
     <Setter Property="Background" Value="{DynamicResource BorderBrush}" />
   </Style>
 
-  <!-- Aviso destacado (simulação, instalação existente...) -->
+  <!-- Aviso destacado com contorno (simulação, instalação existente...) -->
   <Style Selector="Border.notice">
-    <Setter Property="Background" Value="{DynamicResource PrimarySoftBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource PrimarySoftHoverBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentSoftHoverBrush}" />
     <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="12" />
-    <Setter Property="Padding" Value="14,10" />
   </Style>
   <Style Selector="Border.notice.danger">
-    <Setter Property="Background" Value="{DynamicResource DangerSoftBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource DangerSoftBrush}" />
-  </Style>
-
-  <!-- ===================== Campos de texto ===================== -->
-  <Style Selector="TextBox.field">
-    <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-    <Setter Property="CornerRadius" Value="10" />
-    <Setter Property="Padding" Value="12,9" />
-    <Setter Property="VerticalContentAlignment" Value="Center" />
-  </Style>
-  <Style Selector="TextBox.field:pointerover /template/ Border#PART_BorderElement">
-    <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource PrimarySoftHoverBrush}" />
-  </Style>
-  <Style Selector="TextBox.field:focus /template/ Border#PART_BorderElement">
-    <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
-  </Style>
-
-  <!-- ===================== Barra de progresso ===================== -->
-  <Style Selector="ProgressBar.slim">
-    <Setter Property="MinHeight" Value="6" />
-    <Setter Property="Height" Value="6" />
-    <Setter Property="CornerRadius" Value="3" />
-    <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
   </Style>
 
   <!-- ===================== Barra de rolagem mais discreta ===================== -->

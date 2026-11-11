@@ -1,0 +1,3 @@
+[submodule "lib/NokyLabs.UI"]
+	path = lib/NokyLabs.UI
+	url = https://github.com/ThayTTG/NokyLabs.UI.git

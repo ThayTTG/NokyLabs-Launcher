@@ -1,4 +1,5 @@
 using Avalonia;
+using NokyLabs.UI;
 
 namespace NokyLabs;
 
@@ -13,6 +14,6 @@ internal sealed class Program
     public static AppBuilder BuildAvaloniaApp() =>
         AppBuilder.Configure<App>()
             .UsePlatformDetect()   // escolhe Win32 no Windows, X11 no Linux
-            .WithInterFont()       // mesma fonte nos dois sistemas
+            .UseNokyLabs()         // Kit NokyLabs: fonte Inter nos dois sistemas
             .LogToTrace();
 }

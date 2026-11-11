@@ -40,7 +40,7 @@ public partial class SetupAppItem : ObservableObject
     public SetupAppItem(CatalogApp app)
     {
         App = app;
-        AccentBrush = IconHelper.AccentBrush(app.Accent);
+        AccentBrush = IconHelper.ReadableBrush(IconHelper.ParseColor(app.Accent));
         AccentSoftBrush = IconHelper.AccentBrush(app.Accent, 0.16);
         IconGeometry = IconHelper.ParseIcon(app.Icon);
 

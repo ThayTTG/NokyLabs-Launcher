@@ -5,6 +5,7 @@ using Avalonia.VisualTree;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using NokyLabs.Models;
+using NokyLabs.UI;
 using NokyLabs.ViewModels;
 
 namespace NokyLabs.Views;
@@ -19,8 +20,19 @@ public partial class MainWindow : Window
         DataContextChanged += (_, _) =>
         {
             if (DataContext is MainWindowViewModel vm)
+            {
                 vm.ShowInstallDialog = ShowInstallDialogAsync;
+                vm.PropertyChanged += (_, e) =>
+                {
+                    // Trocou de página: os blocos da página nova entram em sequência (animação do Kit)
+                    if (e.PropertyName == nameof(MainWindowViewModel.IsLibraryPage) && vm.IsLibraryPage) PlayPageEntrance(LibraryPage);
+                    else if (e.PropertyName == nameof(MainWindowViewModel.IsUpdatesPage) && vm.IsUpdatesPage) PlayPageEntrance(UpdatesPage);
+                    else if (e.PropertyName == nameof(MainWindowViewModel.IsSettingsPage) && vm.IsSettingsPage) PlayPageEntrance(SettingsPage);
+                };
+            }
         };
+
+        Opened += (_, _) => PlayPageEntrance(LibraryPage);
 
         // Esc fecha o painel de detalhes
         KeyDown += (_, e) =>
@@ -31,6 +43,15 @@ public partial class MainWindow : Window
                 e.Handled = true;
             }
         };
+    }
+
+    /// <summary>Cada bloco visível da página sobe 10px e aparece, 45 ms depois do anterior.</summary>
+    private static void PlayPageEntrance(Panel? page)
+    {
+        if (page is null) return;
+        var order = 0;
+        foreach (var child in page.Children)
+            if (child is Control { IsVisible: true } c) Anim.PlayEntrance(c, order++);
     }
 
     // ------------------------------------------------------------------ painel de detalhes

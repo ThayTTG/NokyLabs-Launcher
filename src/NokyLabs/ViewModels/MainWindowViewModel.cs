@@ -32,6 +32,10 @@ public partial class MainWindowViewModel : ObservableObject
         AppDesktopShortcut = settings.AppDesktopShortcut;
         AppMenuShortcut = settings.AppMenuShortcut;
         OpenAfterInstall = settings.OpenAfterInstall;
+        var theme = ThemeService.Normalize(settings.Theme);
+        IsThemeDark = theme == ThemeService.Dark;
+        IsThemeLight = theme == ThemeService.Light;
+        IsThemeSystem = theme == ThemeService.System;
 
         // "Iniciar com o sistema" é lido do próprio sistema, não do settings.json
         StartWithSystem = StartupService.IsEnabled();
@@ -322,8 +326,36 @@ public partial class MainWindowViewModel : ObservableObject
             AskBeforeInstall = AskBeforeInstall,
             AppDesktopShortcut = AppDesktopShortcut,
             AppMenuShortcut = AppMenuShortcut,
-            OpenAfterInstall = OpenAfterInstall
+            OpenAfterInstall = OpenAfterInstall,
+            Theme = Theme
         });
+    }
+
+    // ---------- Aparência (tema) ----------
+
+    [ObservableProperty] private bool _isThemeDark = true;
+    [ObservableProperty] private bool _isThemeLight;
+    [ObservableProperty] private bool _isThemeSystem;
+
+    /// <summary>O tema escolhido, como fica no settings.json.</summary>
+    public string Theme => IsThemeLight ? ThemeService.Light : IsThemeSystem ? ThemeService.System : ThemeService.Dark;
+
+    // Os três ficam num grupo: quando um liga, os outros desligam sozinhos (e só o que ligou aplica e salva)
+    partial void OnIsThemeDarkChanged(bool value) { if (value) ApplyTheme(); }
+    partial void OnIsThemeLightChanged(bool value) { if (value) ApplyTheme(); }
+    partial void OnIsThemeSystemChanged(bool value) { if (value) ApplyTheme(); }
+
+    private void ApplyTheme()
+    {
+        if (_loading) return;   // na abertura, quem aplica o tema é o App (antes de mostrar a janela)
+        ThemeService.Apply(Theme);
+        SaveSettings();
+    }
+
+    /// <summary>O tema mudou (pela escolha ou pelo sistema): os ícones dos apps trocam para a cor legível.</summary>
+    public void RefreshThemeColors()
+    {
+        foreach (var app in _allApps) app.RefreshThemeColors();
     }
 
     public bool HasCatalogUrl => !string.IsNullOrWhiteSpace(CatalogUrl);

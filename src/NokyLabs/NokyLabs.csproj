@@ -7,7 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>NokyLabs</AssemblyName>
     <RootNamespace>NokyLabs</RootNamespace>
-    <Version>0.8.0</Version>
+    <Version>0.9.0</Version>
     <Product>NokyLabs Launcher</Product>
     <!-- Nome e "Editor" que aparecem no Gerenciador de Tarefas (aba Inicializar) -->
     <AssemblyTitle>NokyLabs Launcher</AssemblyTitle>
@@ -29,6 +29,12 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.*" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.*" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- O Kit NokyLabs (submódulo Git em lib/NokyLabs.UI): cores, temas, botões, animações e créditos.
+         Depois de clonar: git submodule update (com a opção init) -->
+    <ProjectReference Include="..\..\lib\NokyLabs.UI\src\NokyLabs.UI\NokyLabs.UI.csproj" />
   </ItemGroup>
 
   <!-- Os testes automáticos (tests/NokyLabs.Tests) enxergam as partes internas -->

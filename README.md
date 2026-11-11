@@ -13,6 +13,15 @@ Launcher multiplataforma (Windows + Linux) para os utilitários da NokyLabs, fei
 
 ## Como rodar
 
+O visual vem do **Kit NokyLabs**, na biblioteca `NokyLabs.UI`, que fica num submódulo Git em `lib/NokyLabs.UI`.
+Depois de clonar (só uma vez):
+
+```powershell
+git submodule update --init
+```
+
+Para trazer uma versão nova do Kit: `git submodule update --remote lib/NokyLabs.UI`.
+
 **Visual Studio:** abra `NokyLabs.sln` e aperte **F5**.
 
 **Terminal** (Windows ou Linux), dentro desta pasta:
@@ -86,6 +95,13 @@ Ao clicar em **Instalar** num app, abre uma janela com o destino, o espaço livr
 - Lembrar e não perguntar de novo
 
 Os padrões ficam em *Configurações › Instalação de apps*. Os atalhos criados ficam anotados no `nokylabs-app.json` de cada app e são removidos junto quando o app é desinstalado. Atualizações mantêm os atalhos.
+
+## Aparência
+
+O launcher usa o Kit NokyLabs, o mesmo visual do site e do ValReport: cores, fonte Inter, botões em pílula,
+cartões e animações vêm da `NokyLabs.UI`, com o roxo da marca (`#A068FF`) como cor de destaque.
+Em **Configurações › Aparência** dá para escolher o tema **Escuro** (o padrão), **Claro** ou **Igual ao sistema**;
+a escolha fica no `settings.json` (`"theme"`). Só o que é do launcher fica em `src/NokyLabs/Styles`.
 
 ## Como o launcher funciona
 

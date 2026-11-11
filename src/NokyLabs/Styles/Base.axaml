@@ -1,0 +1,12 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- Valores-padrão do launcher que entram ANTES do Kit NokyLabs,
+       para que os estilos do Kit (ícone do menu ativo, dos avisos…) possam mudá-los. -->
+
+  <!-- Ícones de traço sem cor definida ficam na cor do texto secundário -->
+  <Style Selector="Path.icon">
+    <Setter Property="Stroke" Value="{DynamicResource TextSecondaryBrush}" />
+  </Style>
+
+</Styles>

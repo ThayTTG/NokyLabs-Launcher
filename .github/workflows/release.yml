@@ -32,6 +32,8 @@ jobs:
       tag: ${{ steps.v.outputs.tag }}
     steps:
       - uses: actions/checkout@v5
+        with:
+          submodules: true   # lib/NokyLabs.UI (o Kit NokyLabs)
       - id: v
         run: |
           if [ "${{ github.ref_type }}" = "tag" ]; then
@@ -72,6 +74,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          submodules: true   # lib/NokyLabs.UI (o Kit NokyLabs)
       - uses: actions/download-artifact@v7
         with:
           name: catalogo
@@ -97,6 +101,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          submodules: true   # lib/NokyLabs.UI (o Kit NokyLabs)
       - uses: actions/download-artifact@v7
         with:
           name: catalogo
@@ -123,6 +129,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          submodules: true   # lib/NokyLabs.UI (o Kit NokyLabs)
       - name: Notas da versão (CHANGELOG.md)
         id: notas
         run: python3 .github/scripts/notas_da_versao.py ler "${{ needs.versao.outputs.tag }}" CHANGELOG.md
