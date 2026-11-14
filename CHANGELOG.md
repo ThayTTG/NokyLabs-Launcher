@@ -5,6 +5,8 @@ Tudo o que muda no NokyLabs Launcher, versão por versão. O texto de cada vers�
 **Como usar:** anote as mudanças em `## [Não lançado]` enquanto trabalha. Na hora de lançar, é só aumentar o `<Version>` no `.csproj` e enviar para o branch `release`: o lançamento usa essa seção e ela vira a seção da versão sozinha.
 
 ## [Não lançado]
+
+## [0.9.0] - 2026-11-14
 - Visual novo, o mesmo do site e do ValReport (Kit NokyLabs): fonte Inter, botões em pílula, cartões que sobem ao passar o mouse, os números do topo da Biblioteca contando e as páginas entrando suavemente.
 - Novo **tema claro**. Em **Configurações › Aparência**, escolha Escuro, Claro ou Igual ao sistema; a troca vale na hora.
 - As cores de cada app continuam fáceis de ler nos dois temas.
